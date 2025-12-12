@@ -1,0 +1,203 @@
+{
+  "project_info": {
+    "project_number": "1040302851595",
+    "firebase_url": "https://mouthful-foods-ca124-default-rtdb.firebaseio.com",
+    "project_id": "mouthful-foods-ca124",
+    "storage_bucket": "mouthful-foods-ca124.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040302851595:android:5ce14bdc049cc58e18690e",
+        "android_client_info": {
+          "package_name": "io.instamobile.mouthfulfoodsconsumer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR0KxtOnE3gIRdqN9EdHsv055Tg1AC5A"
+        },
+        {
+          "current_key": "AIzaSyB-lkjAyfIRXCIYO9JBF2JcrJ3gKMunGT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040302851595:android:7b85c68ce06adcc418690e",
+        "android_client_info": {
+          "package_name": "io.instamobile.mouthfulfoodsconsumerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR0KxtOnE3gIRdqN9EdHsv055Tg1AC5A"
+        },
+        {
+          "current_key": "AIzaSyB-lkjAyfIRXCIYO9JBF2JcrJ3gKMunGT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040302851595:android:aa6157a4bd63d20c18690e",
+        "android_client_info": {
+          "package_name": "io.instamobile.mouthfulfoodsdriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR0KxtOnE3gIRdqN9EdHsv055Tg1AC5A"
+        },
+        {
+          "current_key": "AIzaSyB-lkjAyfIRXCIYO9JBF2JcrJ3gKMunGT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040302851595:android:262c34c3e4be17ce18690e",
+        "android_client_info": {
+          "package_name": "io.instamobile.mouthfulfoodsdriverapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR0KxtOnE3gIRdqN9EdHsv055Tg1AC5A"
+        },
+        {
+          "current_key": "AIzaSyB-lkjAyfIRXCIYO9JBF2JcrJ3gKMunGT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040302851595:android:9b15201670c6c92118690e",
+        "android_client_info": {
+          "package_name": "io.instamobile.mouthfulfoodsmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR0KxtOnE3gIRdqN9EdHsv055Tg1AC5A"
+        },
+        {
+          "current_key": "AIzaSyB-lkjAyfIRXCIYO9JBF2JcrJ3gKMunGT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040302851595:android:40d1c4a3449c685618690e",
+        "android_client_info": {
+          "package_name": "io.instamobile.mouthfulmultivendor3in1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR0KxtOnE3gIRdqN9EdHsv055Tg1AC5A"
+        },
+        {
+          "current_key": "AIzaSyB-lkjAyfIRXCIYO9JBF2JcrJ3gKMunGT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040302851595-tio7tp8jfr5h15sm78rvg5bfgctshbd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
