@@ -138,8 +138,17 @@ function HomeScreen(props) {
   // -------------------------------------------------------
   // BUTTON HANDLERS
   // -------------------------------------------------------
-  const onGoOnline = () => goOnline(currentUser.id);
-  const onGoOffline = () => goOffline(currentUser.id);
+  const onGoOnline = () => {
+    goOnline(currentUser.id).catch(error => {
+      console.log('Go online error:', error);
+    });
+  };
+  
+  const onGoOffline = () => {
+    goOffline(currentUser.id).catch(error => {
+      console.log('Go offline error:', error);
+    });
+  };
 
   const onMessagePress = () => {
     const order = orders[0];
@@ -163,17 +172,30 @@ function HomeScreen(props) {
     onPress: onGoOnline,
   };
 
-  const onAcceptNewOrder = () =>
-    orderRequest && accept(orderRequest, currentUser);
-  const onRejectNewOrder = () =>
-    orderRequest && reject(orderRequest, currentUser);
+  const onAcceptNewOrder = () => {
+    if (orderRequest) {
+      accept(orderRequest, currentUser).catch(error => {
+        console.log('Accept order error:', error);
+      });
+    }
+  };
+  
+  const onRejectNewOrder = () => {
+    if (orderRequest) {
+      reject(orderRequest, currentUser).catch(error => {
+        console.log('Reject order error:', error);
+      });
+    }
+  };
 
   // -------------------------------------------------------
   // POLYLINE COMPUTATION (FULLY PATCHED + AUTO-ZOOM)
   // -------------------------------------------------------
   const computePolylineCoordinates = useCallback(
     orders => {
+      console.log('computePolylineCoordinates called with orders:', orders?.length, 'currentUser location:', currentUser?.location);
       if (!orders?.length || !currentUser?.location) {
+        console.log('Skipping polyline computation: no orders or user location');
         setRouteCoordinates([]);
         return;
       }
@@ -204,9 +226,12 @@ function HomeScreen(props) {
       }
 
       if (!destCoordinate) {
+        console.log('No destination coordinate found for order status:', order.status);
         setRouteCoordinates([]);
         return;
       }
+
+      console.log('Computing polyline from:', sourceCoordinate, 'to:', destCoordinate);
 
       try {
         getDirections(sourceCoordinate, destCoordinate, config.googleAPIKey, coords => {
