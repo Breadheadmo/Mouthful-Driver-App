@@ -6,6 +6,7 @@ import {
   Platform,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -60,8 +61,8 @@ function HomeScreen(props) {
   const [region, setRegion] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [positionWatchID, setPositionWatchID] = useState(null);
+  const [isPolylineLoading, setIsPolylineLoading] = useState(false);
 
-  // ⭐ NEW: MAP REF FOR AUTO-ZOOMING ⭐
   const mapRef = useRef(null);
 
   // -------------------------------------------------------
@@ -112,6 +113,18 @@ function HomeScreen(props) {
     });
   }, [currentUser?.id]);
 
+  // -------------------------------------------------------
+  // CLEAR POLYLINE ON APP LOAD IF ORDER NOT IN TRANSIT
+  // -------------------------------------------------------
+  useEffect(() => {
+    if (currentUser?.inProgressOrderID) {
+      const activeOrder = orders?.[0];
+      if (!activeOrder || activeOrder.status !== 'In Transit') {
+        setRouteCoordinates([]);
+      }
+    }
+  }, []);
+
   // Cleanup Geolocation
   useEffect(() => {
     return () => {
@@ -120,35 +133,31 @@ function HomeScreen(props) {
   }, [positionWatchID]);
 
   // -------------------------------------------------------
-  // MAIN MAP EFFECT
+  // MAIN MAP EFFECT → ONLY IN TRANSIT
   // -------------------------------------------------------
   useEffect(() => {
-    if (orders?.length > 0) {
-      computePolylineCoordinates(orders);
-
-      if (currentUser?.inProgressOrderID) {
-        trackDriverLocation();
-      }
-    } else {
+    if (!orders?.length) {
       if (positionWatchID) Geolocation.clearWatch(positionWatchID);
       setRouteCoordinates([]);
+      return;
+    }
+
+    const activeOrder = orders[0];
+
+    if (activeOrder.status === 'In Transit') {
+      computePolylineCoordinates([activeOrder]);
+      trackDriverLocation();
+    } else {
+      setRouteCoordinates([]);
+      if (positionWatchID) Geolocation.clearWatch(positionWatchID);
     }
   }, [orders]);
 
   // -------------------------------------------------------
   // BUTTON HANDLERS
   // -------------------------------------------------------
-  const onGoOnline = () => {
-    goOnline(currentUser.id).catch(error => {
-      console.log('Go online error:', error);
-    });
-  };
-  
-  const onGoOffline = () => {
-    goOffline(currentUser.id).catch(error => {
-      console.log('Go offline error:', error);
-    });
-  };
+  const onGoOnline = () => goOnline(currentUser.id);
+  const onGoOffline = () => goOffline(currentUser.id);
 
   const onMessagePress = () => {
     const order = orders[0];
@@ -172,30 +181,17 @@ function HomeScreen(props) {
     onPress: onGoOnline,
   };
 
-  const onAcceptNewOrder = () => {
-    if (orderRequest) {
-      accept(orderRequest, currentUser).catch(error => {
-        console.log('Accept order error:', error);
-      });
-    }
-  };
-  
-  const onRejectNewOrder = () => {
-    if (orderRequest) {
-      reject(orderRequest, currentUser).catch(error => {
-        console.log('Reject order error:', error);
-      });
-    }
-  };
+  const onAcceptNewOrder = () =>
+    orderRequest && accept(orderRequest, currentUser);
+  const onRejectNewOrder = () =>
+    orderRequest && reject(orderRequest, currentUser);
 
   // -------------------------------------------------------
-  // POLYLINE COMPUTATION (FULLY PATCHED + AUTO-ZOOM)
+  // POLYLINE COMPUTATION + LOADING + DESTINATION MARKER
   // -------------------------------------------------------
   const computePolylineCoordinates = useCallback(
     orders => {
-      console.log('computePolylineCoordinates called with orders:', orders?.length, 'currentUser location:', currentUser?.location);
       if (!orders?.length || !currentUser?.location) {
-        console.log('Skipping polyline computation: no orders or user location');
         setRouteCoordinates([]);
         return;
       }
@@ -226,26 +222,24 @@ function HomeScreen(props) {
       }
 
       if (!destCoordinate) {
-        console.log('No destination coordinate found for order status:', order.status);
         setRouteCoordinates([]);
         return;
       }
 
-      console.log('Computing polyline from:', sourceCoordinate, 'to:', destCoordinate);
-
+      setIsPolylineLoading(true);
       try {
         getDirections(sourceCoordinate, destCoordinate, config.googleAPIKey, coords => {
           const safeCoords = Array.isArray(coords) ? coords : [];
+          setIsPolylineLoading(false);
 
-          // ⭐ Filter ZERO_RESULTS here — silently ignore
+          // Always show destination marker
           if (safeCoords.length < 2) {
-            setRouteCoordinates([]);
+            setRouteCoordinates([sourceCoordinate, destCoordinate]);
             return;
           }
 
           setRouteCoordinates(safeCoords);
 
-          // ⭐ AUTO-ZOOM MAP TO POLYLINE
           if (mapRef.current) {
             setTimeout(() => {
               mapRef.current.fitToCoordinates(safeCoords, {
@@ -257,14 +251,15 @@ function HomeScreen(props) {
         });
       } catch (error) {
         console.log('computePolylineCoordinates error:', error);
-        setRouteCoordinates([]);
+        setIsPolylineLoading(false);
+        setRouteCoordinates([sourceCoordinate, destCoordinate]);
       }
     },
     [currentUser, config.googleAPIKey]
   );
 
   // -------------------------------------------------------
-  // UPDATE POLYLINE WHEN DRIVER MOVES (CRASH-PROOF)
+  // REAL-TIME POLYLINE UPDATES
   // -------------------------------------------------------
   const updatePolyline = useCallback(
     coords => {
@@ -279,7 +274,6 @@ function HomeScreen(props) {
         }
 
         const firstPoint = routeCoordinates[0];
-
         const distance = getDistance(
           firstPoint.latitude,
           firstPoint.longitude,
@@ -287,16 +281,25 @@ function HomeScreen(props) {
           coords.longitude
         );
 
+        // Remove first point if driver moved past it for smooth animation
         if (distance < 1) {
-          setRouteCoordinates(routeCoordinates.slice(1));
+          setRouteCoordinates(prev => prev.slice(1));
         } else if (distance > 2) {
           computePolylineCoordinates(orders);
+        }
+
+        // Stop polyline at the end
+        const lastPoint = routeCoordinates[routeCoordinates.length - 1];
+        const destLocation = orders[0]?.address?.location || orders[0]?.author?.location;
+        if (lastPoint.latitude === destLocation?.latitude &&
+            lastPoint.longitude === destLocation?.longitude) {
+          Geolocation.clearWatch(positionWatchID);
         }
       } catch (error) {
         console.log('updatePolyline failed:', error);
       }
     },
-    [orders, routeCoordinates, computePolylineCoordinates]
+    [orders, routeCoordinates, computePolylineCoordinates, positionWatchID]
   );
 
   // -------------------------------------------------------
@@ -354,28 +357,22 @@ function HomeScreen(props) {
   };
 
   // -------------------------------------------------------
-  // RENDER MAP ELEMENTS (NO CRASHES EVER)
+  // RENDER MAP ELEMENTS
   // -------------------------------------------------------
   const renderMapElements = () => {
-    if (
-      !orders?.length ||
-      !Array.isArray(routeCoordinates) ||
-      routeCoordinates.length < 2 ||
-      isWaitingForOrders
-    ) {
-      return null;
-    }
-
-    const order = orders[0];
+    if (!orders?.length || !Array.isArray(routeCoordinates)) return null;
 
     return (
       <React.Fragment key={'map_elements'}>
-        <Polyline
-          coordinates={routeCoordinates}
-          strokeWidth={5}
-          strokeColor="#0000FF"
-        />
+        {routeCoordinates.length >= 2 && (
+          <Polyline
+            coordinates={routeCoordinates}
+            strokeWidth={5}
+            strokeColor="#0000FF"
+          />
+        )}
 
+        {/* DRIVER MARKER */}
         <Marker
           title={currentUser.firstName}
           coordinate={{
@@ -390,14 +387,16 @@ function HomeScreen(props) {
         </Marker>
 
         {/* DESTINATION MARKER */}
-        <Marker
-          coordinate={routeCoordinates[routeCoordinates.length - 1]}
-        >
-          <Image
-            source={require('../../../core/delivery/assets/destination-icon.png')}
-            style={styles.mapCarIcon}
-          />
-        </Marker>
+        {routeCoordinates.length > 0 && (
+          <Marker
+            coordinate={routeCoordinates[routeCoordinates.length - 1]}
+          >
+            <Image
+              source={require('../../../core/delivery/assets/destination-icon.png')}
+              style={styles.mapCarIcon}
+            />
+          </Marker>
+        )}
       </React.Fragment>
     );
   };
@@ -417,14 +416,22 @@ function HomeScreen(props) {
     return (
       <View style={styles.container}>
         <MapView
-          ref={mapRef}   // ⭐ REQUIRED FOR AUTO-ZOOM ⭐
+          key={routeCoordinates.length} // forces re-render on polyline update
+          ref={mapRef}
           region={region}
-          showsUserLocation={isWaitingForOrders}
+          showsUserLocation={true}
           provider={Platform.OS === 'ios' ? null : PROVIDER_GOOGLE}
           style={styles.mapStyle}
         >
           {renderMapElements()}
         </MapView>
+
+        {/* LOADING INDICATOR */}
+        {isPolylineLoading && (
+          <View style={styles.polylineLoading}>
+            <ActivityIndicator size="large" color="#0000FF" />
+          </View>
+        )}
 
         {orderRequest && (
           <NewOrderRequestModal

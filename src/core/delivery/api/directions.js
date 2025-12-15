@@ -18,10 +18,8 @@ export const getDirections = async (
     }
 
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc.latitude},${startLoc.longitude}&destination=${destinationLoc.latitude},${destinationLoc.longitude}&key=${apiKey}`
-    console.log('Directions API URL:', url)
     let resp = await fetch(url)
     let respJson = await resp.json()
-    console.log('Directions API Response:', JSON.stringify(respJson, null, 2))
 
     // Handle invalid or ZERO_RESULTS responses safely
     if (!respJson || respJson.status !== 'OK' || !respJson.routes || respJson.routes.length < 1) {

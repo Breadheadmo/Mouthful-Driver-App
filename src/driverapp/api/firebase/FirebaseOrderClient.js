@@ -5,6 +5,7 @@ export const subscribeToOrders = (config, driverID, callback) => {
   if (!driverID) {
     return () => {}
   }
+
   const ref = firestore()
     .collection(config.FIREBASE_COLLECTIONS.ORDERS)
     .where('driverID', '==', driverID)
@@ -23,13 +24,13 @@ export const subscribeToOrders = (config, driverID, callback) => {
       callback?.(orders)
     },
     error => {
-      console.warn(error)
+      console.warn('subscribeToOrders error:', error)
     },
   )
 }
 
 export const subscribeToInprogressOrder = (config, orderID, callback) => {
-  if (!orderID?.trim) {
+  if (!orderID || !orderID.trim()) {
     return () => {}
   }
 
@@ -38,33 +39,42 @@ export const subscribeToInprogressOrder = (config, orderID, callback) => {
     .doc(orderID)
     .onSnapshot(
       snapshot => {
+        if (!snapshot.exists) {
+          console.log('In-progress order not found:', orderID)
+          return
+        }
         callback?.(snapshot.data())
       },
       error => {
-        console.log(error)
+        console.log('subscribeToInprogressOrder error:', error)
       },
     )
 }
 
 export const accept = async (config, order, driver) => {
   try {
-    if (!driver || !driver.id || driver.id.length === 0) {
+    if (!driver?.id || !order?.id) {
       return
     }
-    if (!order || !order.id || order.id.length === 0) {
+
+    const orderRef = firestore()
+      .collection('restaurant_orders')
+      .doc(order.id)
+
+    const orderSnap = await orderRef.get()
+    if (!orderSnap.exists) {
+      console.log('Accept failed: order not found', order.id)
       return
     }
-    
-    await firestore().collection('restaurant_orders').doc(order.id).update({
+
+    await orderRef.update({
       status: 'Order Accepted',
-      // driver,
-      // driverID: driver.id,
     })
-    
+
     const notify = functions().httpsCallable('sendPushNofications')
     await notify({
       data: {
-        toUserID:  "5FG2G0svoSaE58pKGDTXpB2GD5D3",
+        toUserID: '5FG2G0svoSaE58pKGDTXpB2GD5D3',
         titleStr: 'Order Accepted',
         contentStr: 'Driver accepted order',
         type: 'notifications',
@@ -73,125 +83,134 @@ export const accept = async (config, order, driver) => {
     }).catch(error => {
       console.log('Push notification error:', error)
     })
-    
-    // firestore()
-    //   .collection(config.FIREBASE_COLLECTIONS.USERS)
-    //   .doc(driver.id)
-    //   .update({
-    //     orderRequestData: null,
-    //     inProgressOrderID: order.id,
-    //   })
   } catch (error) {
     console.log('Accept order error:', error)
-    throw error
   }
 }
 
 export const updateStatus = async (config, order, driver) => {
   try {
-    if (!driver || !driver.id || driver.id.length === 0) {
+    if (!driver?.id || !order?.id) {
       return
     }
-    if (!order || !order.id || order.id.length === 0) {
+
+    const orderRef = firestore()
+      .collection('restaurant_orders')
+      .doc(order.id)
+
+    const snap = await orderRef.get()
+    if (!snap.exists) {
+      console.log('Update status failed: order not found', order.id)
       return
     }
-    
-    await firestore().collection('restaurant_orders').doc(order.id).update({
+
+    await orderRef.update({
       status: 'In Transit',
     })
   } catch (error) {
     console.log('Update status error:', error)
-    throw error
   }
 }
 
 export const reject = async (config, order, driver) => {
   try {
-    if (!driver || !driver.id || driver.id.length === 0) {
-      return
-    }
-    if (!order || !order.id || order.id.length === 0) {
+    if (!driver?.id || !order?.id) {
       return
     }
 
-    var rejectedByDrivers = order.rejectedByDrivers ? order.rejectedByDrivers : []
+    const orderRef = firestore()
+      .collection('restaurant_orders')
+      .doc(order.id)
+
+    const snap = await orderRef.get()
+    if (!snap.exists) {
+      console.log('Reject failed: order not found', order.id)
+      return
+    }
+
+    const rejectedByDrivers = order.rejectedByDrivers || []
     rejectedByDrivers.push(driver.id)
 
-    // firestore()
-    //   .collection(config.FIREBASE_COLLECTIONS.USERS)
-    //   .doc(driver.id)
-    //   .update({ orderRequestData: null })
-
-    await firestore().collection('restaurant_orders').doc(order.id).update({
+    await orderRef.update({
       status: 'Driver Rejected',
-      rejectedByDrivers: rejectedByDrivers,
+      rejectedByDrivers,
     })
   } catch (error) {
     console.log('Reject order error:', error)
-    throw error
   }
 }
 
 export const onDelete = async (config, orderID) => {
   try {
-    if (!orderID || orderID.length === 0) {
+    if (!orderID) {
       return
     }
 
-    await firestore()
+    const ref = firestore()
       .collection(config.FIREBASE_COLLECTIONS.ORDERS)
       .doc(orderID)
-      .delete()
-    
+
+    const snap = await ref.get()
+    if (!snap.exists) {
+      console.log('Delete skipped: order not found', orderID)
+      return
+    }
+
+    await ref.delete()
     console.log('Order deleted successfully:', orderID)
   } catch (error) {
     console.log('Delete order error:', error)
-    throw error
   }
 }
 
 export const markAsPickedUp = async (config, order) => {
   try {
-    if (!order || !order.id || order.id.length === 0) {
+    if (!order?.id) {
       return
     }
 
-    await firestore()
+    const ref = firestore()
       .collection(config.FIREBASE_COLLECTIONS.ORDERS)
       .doc(order.id)
-      .update({ status: 'In Transit' })
-    
+
+    const snap = await ref.get()
+    if (!snap.exists) {
+      console.log('Pick up failed: order not found', order.id)
+      return
+    }
+
+    await ref.update({ status: 'In Transit' })
     console.log('Order marked as picked up:', order.id)
   } catch (error) {
     console.log('Mark as picked up error:', error)
-    throw error
   }
 }
 
 export const markAsCompleted = async (config, order, driver) => {
   try {
-    if (!order || !order.id || order.id.length === 0) {
-      return
-    }
-    if (!driver || !driver.id || driver.id.length === 0) {
+    if (!order?.id || !driver?.id) {
       return
     }
 
-    // Update order status
-    await firestore()
+    const orderRef = firestore()
       .collection(config.FIREBASE_COLLECTIONS.ORDERS)
       .doc(order.id)
-      .update({ status: 'Order Completed' })
 
-    // Update driver status
+    const orderSnap = await orderRef.get()
+    if (!orderSnap.exists) {
+      console.log('Complete failed: order not found', order.id)
+      return
+    }
+
+    await orderRef.update({ status: 'Order Completed' })
+
     await firestore()
       .collection(config.FIREBASE_COLLECTIONS.USERS)
       .doc(driver.id)
       .update({ inProgressOrderID: null, orderRequestData: null })
-    
+
     console.log('Order marked as completed:', order.id)
   } catch (error) {
     console.log('Mark as completed error:', error)
-    throw error
   }
 }
