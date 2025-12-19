@@ -7,10 +7,11 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 
 import {
@@ -62,18 +63,33 @@ function HomeScreen(props) {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [positionWatchID, setPositionWatchID] = useState(null);
   const [isPolylineLoading, setIsPolylineLoading] = useState(false);
+  const [activeTripId, setActiveTripId] = useState(null);
+
+  // DISTANCE ONLY (ETA REMOVED)
+  const [tripDistanceKm, setTripDistanceKm] = useState(0);
+
+  const polylineOpacity = useRef(new Animated.Value(1)).current;
+  const carCoordinate = useRef(
+    new AnimatedRegion({
+      latitude: currentUser?.location?.latitude || 0,
+      longitude: currentUser?.location?.longitude || 0,
+      latitudeDelta: 0,
+      longitudeDelta: 0,
+    })
+  ).current;
 
   const mapRef = useRef(null);
+  const lastDistanceRef = useRef(0); // For smoothing
 
   // -------------------------------------------------------
-  // HEADER SETUP
+  // HEADER
   // -------------------------------------------------------
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => <Text style={styles.headerStyle}>{localized('Home')}</Text>,
       headerLeft: () => <Hamburger onPress={() => navigation.openDrawer()} />,
       headerRight: () => (
-        <TouchableOpacity style={styles.logoutButton} onPress={onGoOffline}>
+        <TouchableOpacity style={styles.logoutButton} onPress={goOffline}>
           <Image
             source={require('../../../assets/icons/shutdown.png')}
             style={styles.logoutButtonImage}
@@ -84,12 +100,20 @@ function HomeScreen(props) {
   }, []);
 
   // -------------------------------------------------------
-  // DRIVER STATE → ONLINE/OFFLINE UI
+  // DRIVER STATE
   // -------------------------------------------------------
   useEffect(() => {
     if (!orderRequest && !inProgressOrderID && updatedDriver?.isActive) {
       setIsWaitingForOrders(true);
       setRouteCoordinates([]);
+      setActiveTripId(null);
+      setTripDistanceKm(0);
+
+      if (positionWatchID) {
+        Geolocation.clearWatch(positionWatchID);
+        setPositionWatchID(null);
+      }
+      polylineOpacity.setValue(1);
     } else {
       setIsWaitingForOrders(false);
     }
@@ -100,7 +124,7 @@ function HomeScreen(props) {
   }, [inProgressOrderID, orderRequest, updatedDriver]);
 
   // -------------------------------------------------------
-  // SET INITIAL USER MAP POSITION
+  // INITIAL MAP POSITION
   // -------------------------------------------------------
   useEffect(() => {
     if (!currentUser?.location) return;
@@ -111,349 +135,244 @@ function HomeScreen(props) {
       latitudeDelta: 0.00922,
       longitudeDelta: 0.00421,
     });
-  }, [currentUser?.id]);
+
+    carCoordinate.timing({
+      latitude: currentUser.location.latitude,
+      longitude: currentUser.location.longitude,
+      duration: 0,
+      useNativeDriver: false,
+    }).start();
+  }, [currentUser?.location]);
 
   // -------------------------------------------------------
-  // CLEAR POLYLINE ON APP LOAD IF ORDER NOT IN TRANSIT
+  // CLEANUP
   // -------------------------------------------------------
-  useEffect(() => {
-    if (currentUser?.inProgressOrderID) {
-      const activeOrder = orders?.[0];
-      if (!activeOrder || activeOrder.status !== 'In Transit') {
-        setRouteCoordinates([]);
-      }
-    }
-  }, []);
-
-  // Cleanup Geolocation
-  useEffect(() => {
-    return () => {
-      if (positionWatchID != null) Geolocation.clearWatch(positionWatchID);
-    };
-  }, [positionWatchID]);
-
-  // -------------------------------------------------------
-  // MAIN MAP EFFECT → ONLY IN TRANSIT
-  // -------------------------------------------------------
-  useEffect(() => {
-    if (!orders?.length) {
-      if (positionWatchID) Geolocation.clearWatch(positionWatchID);
+  const endTripCleanup = () => {
+    Animated.timing(polylineOpacity, {
+      toValue: 0,
+      duration: 600,
+      useNativeDriver: true,
+    }).start(() => {
       setRouteCoordinates([]);
+      setActiveTripId(null);
+      setTripDistanceKm(0);
+      polylineOpacity.setValue(1);
+    });
+
+    if (positionWatchID) {
+      Geolocation.clearWatch(positionWatchID);
+      setPositionWatchID(null);
+    }
+  };
+
+  // -------------------------------------------------------
+  // MAIN TRIP EFFECT
+  // -------------------------------------------------------
+  useEffect(() => {
+    if (!orders?.length || !currentUser?.location) {
+      endTripCleanup();
       return;
     }
 
     const activeOrder = orders[0];
 
     if (activeOrder.status === 'In Transit') {
+      if (activeTripId !== activeOrder.id) {
+        setActiveTripId(activeOrder.id);
+        setRouteCoordinates([]);
+      }
       computePolylineCoordinates([activeOrder]);
       trackDriverLocation();
     } else {
-      setRouteCoordinates([]);
-      if (positionWatchID) Geolocation.clearWatch(positionWatchID);
+      if (activeTripId) endTripCleanup();
     }
-  }, [orders]);
+  }, [orders, currentUser?.location]);
 
   // -------------------------------------------------------
-  // BUTTON HANDLERS
-  // -------------------------------------------------------
-  const onGoOnline = () => goOnline(currentUser.id);
-  const onGoOffline = () => goOffline(currentUser.id);
-
-  const onMessagePress = () => {
-    const order = orders[0];
-    const customerID = order.author?.id;
-    const viewerID = currentUser.id;
-
-    let channel = {
-      id: viewerID < customerID ? viewerID + customerID : customerID + viewerID,
-      participants: [order.author],
-    };
-
-    props.navigation.navigate('PersonalChat', { channel });
-  };
-
-  const emptyStateConfig = {
-    title: localized("You're offline"),
-    description: localized(
-      'Go online in order to start getting delivery requests.'
-    ),
-    callToAction: localized('Go Online'),
-    onPress: onGoOnline,
-  };
-
-  const onAcceptNewOrder = () =>
-    orderRequest && accept(orderRequest, currentUser);
-  const onRejectNewOrder = () =>
-    orderRequest && reject(orderRequest, currentUser);
-
-  // -------------------------------------------------------
-  // POLYLINE COMPUTATION + LOADING + DESTINATION MARKER
+  // POLYLINE + DISTANCE
   // -------------------------------------------------------
   const computePolylineCoordinates = useCallback(
     orders => {
-      if (!orders?.length || !currentUser?.location) {
-        setRouteCoordinates([]);
-        return;
-      }
+      if (!orders?.length || !currentUser?.location) return;
 
       const order = orders[0];
-      const driver = currentUser;
+      if (order.status !== 'In Transit') return;
 
       const sourceCoordinate = {
-        latitude: driver.location.latitude,
-        longitude: driver.location.longitude,
+        latitude: currentUser.location.latitude,
+        longitude: currentUser.location.longitude,
       };
 
-      let destCoordinate = null;
+      const destLocation = order.address?.location || order.author?.location;
+      if (!destLocation) return;
 
-      if (order.status === 'Order Shipped' && order.vendor) {
-        destCoordinate = {
-          latitude: order.vendor.latitude,
-          longitude: order.vendor.longitude,
-        };
-      } else if (order.status === 'In Transit') {
-        const destLocation = order.address?.location || order.author?.location;
-        if (destLocation) {
-          destCoordinate = {
-            latitude: destLocation.latitude,
-            longitude: destLocation.longitude,
-          };
-        }
-      }
-
-      if (!destCoordinate) {
-        setRouteCoordinates([]);
-        return;
-      }
+      const destCoordinate = {
+        latitude: destLocation.latitude,
+        longitude: destLocation.longitude,
+      };
 
       setIsPolylineLoading(true);
-      try {
-        getDirections(sourceCoordinate, destCoordinate, config.googleAPIKey, coords => {
-          const safeCoords = Array.isArray(coords) ? coords : [];
+
+      getDirections(
+        sourceCoordinate,
+        destCoordinate,
+        config.googleAPIKey,
+        coords => {
           setIsPolylineLoading(false);
+          if (!coords?.length) return;
 
-          // Always show destination marker
-          if (safeCoords.length < 2) {
-            setRouteCoordinates([sourceCoordinate, destCoordinate]);
-            return;
+          setRouteCoordinates(coords);
+
+          // Initial distance calculation
+          let meters = 0;
+          for (let i = 1; i < coords.length; i++) {
+            meters += getDistance(
+              coords[i - 1].latitude,
+              coords[i - 1].longitude,
+              coords[i].latitude,
+              coords[i].longitude
+            );
           }
 
-          setRouteCoordinates(safeCoords);
+          lastDistanceRef.current = meters / 1000; // Set initial km
+          setTripDistanceKm((meters / 1000).toFixed(1));
 
-          if (mapRef.current) {
-            setTimeout(() => {
-              mapRef.current.fitToCoordinates(safeCoords, {
-                edgePadding: { top: 80, bottom: 80, left: 80, right: 80 },
-                animated: true,
-              });
-            }, 300);
-          }
-        });
-      } catch (error) {
-        console.log('computePolylineCoordinates error:', error);
-        setIsPolylineLoading(false);
-        setRouteCoordinates([sourceCoordinate, destCoordinate]);
-      }
+          mapRef.current?.fitToCoordinates(coords, {
+            edgePadding: { top: 80, bottom: 140, left: 80, right: 80 },
+            animated: true,
+          });
+        }
+      );
     },
     [currentUser, config.googleAPIKey]
   );
 
   // -------------------------------------------------------
-  // REAL-TIME POLYLINE UPDATES
-  // -------------------------------------------------------
-  const updatePolyline = useCallback(
-    coords => {
-      try {
-        if (
-          !orders?.length ||
-          !Array.isArray(routeCoordinates) ||
-          routeCoordinates.length < 2
-        ) {
-          computePolylineCoordinates(orders);
-          return;
-        }
-
-        const firstPoint = routeCoordinates[0];
-        const distance = getDistance(
-          firstPoint.latitude,
-          firstPoint.longitude,
-          coords.latitude,
-          coords.longitude
-        );
-
-        // Remove first point if driver moved past it for smooth animation
-        if (distance < 1) {
-          setRouteCoordinates(prev => prev.slice(1));
-        } else if (distance > 2) {
-          computePolylineCoordinates(orders);
-        }
-
-        // Stop polyline at the end
-        const lastPoint = routeCoordinates[routeCoordinates.length - 1];
-        const destLocation = orders[0]?.address?.location || orders[0]?.author?.location;
-        if (lastPoint.latitude === destLocation?.latitude &&
-            lastPoint.longitude === destLocation?.longitude) {
-          Geolocation.clearWatch(positionWatchID);
-        }
-      } catch (error) {
-        console.log('updatePolyline failed:', error);
-      }
-    },
-    [orders, routeCoordinates, computePolylineCoordinates, positionWatchID]
-  );
-
-  // -------------------------------------------------------
   // LOCATION TRACKING
   // -------------------------------------------------------
-  const watchPosition = () => {
-    return Geolocation.watchPosition(
+  const watchPosition = () =>
+    Geolocation.watchPosition(
       position => {
-        const coords = position.coords;
-        if (!coords) return;
-
-        const locationDict = {
-          location: { latitude: coords.latitude, longitude: coords.longitude },
-        };
+        const { latitude, longitude } = position.coords;
+        const locationDict = { location: { latitude, longitude } };
 
         dispatch(setUserData({ user: { ...currentUser, ...locationDict } }));
         updateUser(currentUser.id, locationDict);
-        updatePolyline(coords);
 
-        setRegion(prev => ({
-          ...prev,
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        }));
+        // Animate car
+        carCoordinate.timing({
+          latitude,
+          longitude,
+          duration: 500,
+          useNativeDriver: false,
+        }).start();
+
+        // Smoothly update remaining distance
+        if (routeCoordinates.length >= 2) {
+          let remainingMeters = 0;
+          for (let i = 1; i < routeCoordinates.length; i++) {
+            remainingMeters += getDistance(
+              routeCoordinates[i - 1].latitude,
+              routeCoordinates[i - 1].longitude,
+              routeCoordinates[i].latitude,
+              routeCoordinates[i].longitude
+            );
+          }
+          const remainingKm = remainingMeters / 1000;
+
+          // Smooth with simple alpha blending
+          const alpha = 0.3;
+          lastDistanceRef.current =
+            lastDistanceRef.current * (1 - alpha) + remainingKm * alpha;
+
+          setTripDistanceKm(lastDistanceRef.current.toFixed(1));
+        }
+
       },
-      error => console.log("Location Error:", error),
-      {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000,
-        distanceFilter: 10,
-      }
+      error => console.log('Location error:', error),
+      { enableHighAccuracy: true, distanceFilter: 10 }
     );
-  };
-
-  const handleAndroidLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        setPositionWatchID(watchPosition());
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   const trackDriverLocation = () => {
+    if (positionWatchID) return;
+
     if (Platform.OS === 'ios') {
       setPositionWatchID(watchPosition());
     } else {
-      handleAndroidLocationPermission();
+      PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      ).then(granted => {
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setPositionWatchID(watchPosition());
+        }
+      });
     }
   };
 
   // -------------------------------------------------------
-  // RENDER MAP ELEMENTS
+  // MAP ELEMENTS
   // -------------------------------------------------------
   const renderMapElements = () => {
-    if (!orders?.length || !Array.isArray(routeCoordinates)) return null;
+    if (!orders?.length || routeCoordinates.length < 2) return null;
 
     return (
-      <React.Fragment key={'map_elements'}>
-        {routeCoordinates.length >= 2 && (
-          <Polyline
-            coordinates={routeCoordinates}
-            strokeWidth={5}
-            strokeColor="#0000FF"
-          />
-        )}
+      <>
+        <Animated.View style={{ opacity: polylineOpacity }}>
+          <Polyline coordinates={routeCoordinates} strokeWidth={5} strokeColor="#0000FF" />
+        </Animated.View>
 
-        {/* DRIVER MARKER */}
-        <Marker
-          title={currentUser.firstName}
-          coordinate={{
-            latitude: currentUser.location.latitude,
-            longitude: currentUser.location.longitude,
-          }}
-        >
+        <Marker.Animated coordinate={carCoordinate}>
           <Image
             source={require('../../../core/delivery/assets/car-icon.png')}
             style={styles.mapCarIcon}
           />
-        </Marker>
-
-        {/* DESTINATION MARKER */}
-        {routeCoordinates.length > 0 && (
-          <Marker
-            coordinate={routeCoordinates[routeCoordinates.length - 1]}
-          >
-            <Image
-              source={require('../../../core/delivery/assets/destination-icon.png')}
-              style={styles.mapCarIcon}
-            />
-          </Marker>
-        )}
-      </React.Fragment>
+        </Marker.Animated>
+      </>
     );
   };
 
   // -------------------------------------------------------
-  // MAIN RENDER
+  // RENDER
   // -------------------------------------------------------
-  if (currentUser && !currentUser.isActive) {
-    return (
-      <View style={styles.inactiveViewContainer}>
-        <EmptyStateView emptyStateConfig={emptyStateConfig} />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <MapView
+        ref={mapRef}
+        region={region}
+        provider={Platform.OS === 'ios' ? null : PROVIDER_GOOGLE}
+        style={styles.mapStyle}
+      >
+        {renderMapElements()}
+      </MapView>
 
-  if (currentUser?.isActive) {
-    return (
-      <View style={styles.container}>
-        <MapView
-          key={routeCoordinates.length} // forces re-render on polyline update
-          ref={mapRef}
-          region={region}
-          showsUserLocation={true}
-          provider={Platform.OS === 'ios' ? null : PROVIDER_GOOGLE}
-          style={styles.mapStyle}
-        >
-          {renderMapElements()}
-        </MapView>
+      {tripDistanceKm > 0 && (
+        <View style={styles.tripInfoContainer}>
+          <Text style={styles.tripInfoText}>{tripDistanceKm} km</Text>
+        </View>
+      )}
 
-        {/* LOADING INDICATOR */}
-        {isPolylineLoading && (
-          <View style={styles.polylineLoading}>
-            <ActivityIndicator size="large" color="#0000FF" />
-          </View>
-        )}
+      {isPolylineLoading && (
+        <View style={styles.polylineLoading}>
+          <ActivityIndicator size="large" color="#0000FF" />
+        </View>
+      )}
 
-        {orderRequest && (
-          <NewOrderRequestModal
-            onAccept={onAcceptNewOrder}
-            onReject={onRejectNewOrder}
-            isVisible={!!orderRequest}
-            onModalHide={onRejectNewOrder}
-          />
-        )}
+      {orderRequest && (
+        <NewOrderRequestModal
+          onAccept={accept}
+          onReject={reject}
+          isVisible={!!orderRequest}
+        />
+      )}
 
-        {orders && currentUser.inProgressOrderID && (
-          <OrderPreviewCard
-            onMessagePress={onMessagePress}
-            driver={currentUser}
-            order={orders}
-          />
-        )}
-      </View>
-    );
-  }
-
-  return null;
+      {orders && currentUser.inProgressOrderID && (
+        <OrderPreviewCard
+          driver={currentUser}
+          order={orders}
+        />
+      )}
+    </View>
+  );
 }
 
 export default HomeScreen;
