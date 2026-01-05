@@ -80,7 +80,8 @@ export default function IMDeliveryView({ navigation, order, style }) {
         <View style={styles.contactPane}>
           <TouchableOpacity
             style={styles.callButton}
-            onPress={onCallButtonPress}>
+            onPress={onCallButtonPress}
+          >
             <IconButton source={require('../assets/call-icon.png')} />
           </TouchableOpacity>
           <Text style={styles.messageButton} onPress={onSendMessageButtonPress}>

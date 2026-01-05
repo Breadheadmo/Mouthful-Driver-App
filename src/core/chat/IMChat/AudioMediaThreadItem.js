@@ -191,7 +191,8 @@ export default AudioMediaThreadItem = memo(props => {
       <TouchableOpacity
         disabled={isLoading}
         onPress={onPlayPausePressed}
-        style={styles.audioPlayPauseIconContainer}>
+        style={styles.audioPlayPauseIconContainer}
+      >
         <View style={styles.playPauseIconContainer}>
           <Image
             style={[

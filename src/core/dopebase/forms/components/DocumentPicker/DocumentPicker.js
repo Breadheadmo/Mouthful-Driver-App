@@ -40,12 +40,14 @@ export const DocumentPicker = ({ title, handleDocument = () => {} }) => {
               borderColor: '#51DC83FF',
             },
           ]}
-          onPress={() => pickDocument()}>
+          onPress={() => pickDocument()}
+        >
           <Text
             style={[
               styles.uploadDocumentText,
               document && { color: '#51DC83FF' },
-            ]}>
+            ]}
+          >
             {localized('Choose File')}
           </Text>
         </TouchableOpacity>

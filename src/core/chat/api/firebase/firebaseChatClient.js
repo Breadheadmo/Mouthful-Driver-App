@@ -59,7 +59,7 @@ export const createChannel = async (
   }
 
   if (isAdmin) {
-    data['admins'] = [creator?.id]
+    data.admins = [creator?.id]
   }
   const instance = ChatFunctions().createChannel
   try {

@@ -126,14 +126,16 @@ const OrdersScreen = props => {
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
                 style={styles.actionButtonContainer}
-                onPress={() => onAccept(item)}>
+                onPress={() => onAccept(item)}
+              >
                 <Text style={styles.actionButtonText}>
                   {localized('Accept')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.actionButtonContainer1}
-                onPress={() => onReject(item)}>
+                onPress={() => onReject(item)}
+              >
                 <Text style={styles.actionButtonText}>
                   {localized('Reject')}
                 </Text>

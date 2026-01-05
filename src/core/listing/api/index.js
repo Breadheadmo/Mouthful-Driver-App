@@ -11,6 +11,6 @@
 // import * as filterAPI from './firebase/filter';
 // export { listingsAPI, reviewAPI, filterAPI };
 
-export { default as listingsAPI } from './firebase/listing';
-export { default as reviewAPI } from './firebase/review';
-export { default as filterAPI } from './firebase/filter';
+export { default as listingsAPI } from './firebase/listing'
+export { default as reviewAPI } from './firebase/review'
+export { default as filterAPI } from './firebase/filter'

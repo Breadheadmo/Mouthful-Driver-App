@@ -78,7 +78,8 @@ export default function IMRichTextView(props) {
           onPress: onHashTagPress,
         },
       ]}
-      childrenProps={{ allowFontScaling: false }}>
+      childrenProps={{ allowFontScaling: false }}
+    >
       {children}
     </ParsedText>
   )

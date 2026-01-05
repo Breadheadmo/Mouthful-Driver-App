@@ -30,13 +30,15 @@ export const Radio = ({
   return (
     <TouchableOpacity
       style={[styles.outerContainer, containerStyle, outerSizeStyle]}
-      onPress={toggle}>
+      onPress={toggle}
+    >
       <View
         style={
           isEnabled
             ? [styles.innerContainerSelected, innerSizeStyle]
             : [styles.innerContainerUnselected, innerSizeStyle]
-        }></View>
+        }
+      />
     </TouchableOpacity>
   )
 }

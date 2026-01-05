@@ -195,7 +195,8 @@ const SignupScreen = () => {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+      >
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image style={styles.backArrowStyle} source={theme.icons.backArrow} />
         </TouchableOpacity>
@@ -207,7 +208,8 @@ const SignupScreen = () => {
             <Text style={styles.orTextStyle}>{localized('OR')}</Text>
             <TouchableOpacity
               style={styles.PhoneNumberContainer}
-              onPress={() => navigation.navigate('Sms', { isSigningUp: true })}>
+              onPress={() => navigation.navigate('Sms', { isSigningUp: true })}
+            >
               <Text>{localized('Sign up with phone number')}</Text>
             </TouchableOpacity>
           </>

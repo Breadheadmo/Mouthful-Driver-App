@@ -11,7 +11,9 @@ export const displayTextWithMentions = (
   /**
    * Use this function to parse mentions markup @[username](id) in the string value.
    */
-  if (inputText === '') return null
+  if (inputText === '') {
+    return null
+  }
   const retLines = inputText.split('\n')
   const formattedText = []
   retLines.forEach((retLine, rowIndex) => {
@@ -127,7 +129,9 @@ export const EU = {
      */
 
     const sel = { ...selection }
-    if (isTrackingStarted) return sel
+    if (isTrackingStarted) {
+      return sel
+    }
     mentions.forEach((value, [menStart, menEnd]) => {
       if (prevSelc.start > sel.start) {
         //traversing Right -to- Left  <=
@@ -161,7 +165,9 @@ export const EU = {
     const map = new Map()
     let newValue = ''
 
-    if (inputText === '') return null
+    if (inputText === '') {
+      return null
+    }
     const retLines = inputText.split('\n')
 
     retLines.forEach((retLine, rowIndex) => {

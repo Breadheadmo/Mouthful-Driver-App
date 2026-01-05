@@ -57,9 +57,7 @@ export const accept = async (config, order, driver) => {
       return
     }
 
-    const orderRef = firestore()
-      .collection('restaurant_orders')
-      .doc(order.id)
+    const orderRef = firestore().collection('restaurant_orders').doc(order.id)
 
     const orderSnap = await orderRef.get()
     if (!orderSnap.exists) {
@@ -94,9 +92,7 @@ export const updateStatus = async (config, order, driver) => {
       return
     }
 
-    const orderRef = firestore()
-      .collection('restaurant_orders')
-      .doc(order.id)
+    const orderRef = firestore().collection('restaurant_orders').doc(order.id)
 
     const snap = await orderRef.get()
     if (!snap.exists) {
@@ -118,9 +114,7 @@ export const reject = async (config, order, driver) => {
       return
     }
 
-    const orderRef = firestore()
-      .collection('restaurant_orders')
-      .doc(order.id)
+    const orderRef = firestore().collection('restaurant_orders').doc(order.id)
 
     const snap = await orderRef.get()
     if (!snap.exists) {

@@ -41,7 +41,8 @@ export default function CustomTextInput(props) {
         onPressIn={props.onPressIn}
         onPressOut={props.onPressOut}
         placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor}>
+        placeholderTextColor={placeholderTextColor}
+      >
         {formattedText.length > 0 && (
           <Text style={[styles.formmatedText, editorStyles.inputMaskText]}>
             {formattedText}

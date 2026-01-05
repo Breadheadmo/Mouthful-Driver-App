@@ -37,14 +37,16 @@ export default function AddReviewModal({ submitReview, close, isVisible }) {
       onShow={() => inputRef.current.focus()}
       swipeDirection="down"
       visible={isVisible}
-      backdropColor={'grey'}>
+      backdropColor={'grey'}
+    >
       <KeyboardAvoidingView style={styles.container} verticalOffset={-60}>
         <View style={{ flex: 1 }}>
           <View style={[styles.bar, styles.navBarContainer]}>
             <Text style={styles.headerTitle}>{localized('Add Review')}</Text>
             <Text
               style={[styles.rightButton, styles.selectorRightButton]}
-              onPress={close}>
+              onPress={close}
+            >
               {localized('Cancel')}
             </Text>
           </View>

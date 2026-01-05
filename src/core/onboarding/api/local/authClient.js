@@ -74,7 +74,7 @@ const signInWithCredential = (authManager, credential, appIdentifier) => {
 
 /**
  * Register user with email
- * 
+ *
  * @param {object} [userDetails] user details
  * {
     email,
@@ -222,7 +222,7 @@ export const loginWithSMSCode = (smsCode, verificationID) => {
 
 /**
  * Register user with Phone number
- * 
+ *
  * @param {String} userDetails an object containing user details
  * userDetails:
  * {

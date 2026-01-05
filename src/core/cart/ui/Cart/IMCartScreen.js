@@ -81,7 +81,8 @@ function CartScreen(props) {
     return (
       <TouchableWithoutFeedback
         onPress={() => onItemPress(singleCartItem)}
-        style={styles.container}>
+        style={styles.container}
+      >
         <View style={styles.rowContainer} key={singleCartItem.id}>
           <Text style={styles.count}>{singleCartItem.quantity}</Text>
           <Text style={styles.title}>{singleCartItem.name}</Text>

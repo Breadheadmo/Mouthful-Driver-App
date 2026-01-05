@@ -1,7 +1,4 @@
-import {
-  DocRef,
-  UserReportingFunctions,
-} from './userReportingRef'
+import { DocRef, UserReportingFunctions } from './userReportingRef'
 
 export const subscribeToReportedUsers = (userID, callback) => {
   return DocRef(userID).reportsLive.onSnapshot(snapshot => {

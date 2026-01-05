@@ -34,7 +34,8 @@ export const StoryItem = memo(props => {
       ref={refs}
       activeOpacity={activeOpacity}
       onPress={() => onPress(item, index, refs)}
-      style={[styles.container, containerStyle]}>
+      style={[styles.container, containerStyle]}
+    >
       <View style={[styles.imageContainer, imageContainerStyle]}>
         <Image
           style={[styles.image, imageStyle]}
@@ -45,10 +46,8 @@ export const StoryItem = memo(props => {
       {title && (
         <View style={styles.verifiedContainer}>
           <Text
-            style={[
-              styles.text,
-              textStyle,
-            ]}>{`${item.firstName} ${lastName}`}</Text>
+            style={[styles.text, textStyle]}
+          >{`${item.firstName} ${lastName}`}</Text>
           {displayVerifiedBadge &&
             item.isVerified &&
             (item.username !== 'My Story' || item.username !== 'Add Story') && (

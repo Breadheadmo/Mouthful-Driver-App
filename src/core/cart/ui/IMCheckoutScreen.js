@@ -136,7 +136,9 @@ function IMCheckoutScreen(props) {
   }
 
   const onNativePay = async () => {
-    if (!isApplePaySupported) return
+    if (!isApplePaySupported) {
+      return
+    }
     setIsLoading(true)
     const applePayOptions = await constructApplePayOptions(getAppleCartItems())
     const { error } = await presentApplePay(applePayOptions)
@@ -275,7 +277,8 @@ function IMCheckoutScreen(props) {
       <View style={styles.optionsContainer}>
         <Text style={styles.optionTile}>{localized('Payment')}</Text>
         <TouchableWithoutFeedback
-          onPress={() => props.navigation.navigate('Cards')}>
+          onPress={() => props.navigation.navigate('Cards')}
+        >
           <Text style={styles.options}>{selectedPaymentMethod.last4}</Text>
         </TouchableWithoutFeedback>
       </View>

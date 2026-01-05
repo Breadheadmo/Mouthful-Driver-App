@@ -88,13 +88,13 @@ function IMRichTextInput(props) {
       if (triggerLocation.current === 'new-word-only') {
         pattern = new RegExp(
           `\\B${trigger.current}[a-z0-9_-]+|\\B${trigger.current}`,
-          `gi`,
+          'gi',
         )
       } else {
         //anywhere
         pattern = new RegExp(
           `\\${trigger.current}[a-z0-9_-]+|\\${trigger.current}`,
-          `i`,
+          'i',
         )
       }
       const str = input.substr(menIndex.current)
@@ -274,7 +274,9 @@ function IMRichTextInput(props) {
      * and display them with
      * the different styles
      */
-    if (input === '' || !mentionsMap.current.size) return input
+    if (input === '' || !mentionsMap.current.size) {
+      return input
+    }
     const newFormattedText = []
     let lastIndex = 0
     mentionsMap.current.forEach((men, [start, end]) => {
@@ -298,7 +300,9 @@ function IMRichTextInput(props) {
   }
 
   const formatTextWithMentions = input => {
-    if (input === '' || !mentionsMap.current.size) return input
+    if (input === '' || !mentionsMap.current.size) {
+      return input
+    }
     let newFormattedText = ''
     let lastIndex = 0
     mentionsMap.current.forEach((men, [start, end]) => {
@@ -440,7 +444,9 @@ function IMRichTextInput(props) {
   }
 
   const { editorStyles = {} } = props
-  if (!props.showEditor) return null
+  if (!props.showEditor) {
+    return null
+  }
 
   return (
     <CustomTextInput

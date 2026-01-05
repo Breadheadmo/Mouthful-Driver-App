@@ -205,10 +205,12 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+      >
         <TouchableOpacity
           style={{ alignSelf: 'flex-start' }}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.goBack()}
+        >
           <Image style={styles.backArrowStyle} source={theme.icons.backArrow} />
         </TouchableOpacity>
         <Text style={styles.title}>{localized('Sign In')}</Text>
@@ -243,7 +245,8 @@ const LoginScreen = () => {
         )}
         <TouchableOpacity
           style={styles.loginContainer}
-          onPress={() => onPressLogin()}>
+          onPress={() => onPressLogin()}
+        >
           <Text style={styles.loginText}>{localized('Log In')}</Text>
         </TouchableOpacity>
         {/* {config.isFacebookAuthEnabled && (
@@ -276,7 +279,8 @@ const LoginScreen = () => {
         {config.isSMSAuthEnabled && (
           <TouchableOpacity
             style={styles.phoneNumberContainer}
-            onPress={() => navigation.navigate('Sms', { isSigningUp: false })}>
+            onPress={() => navigation.navigate('Sms', { isSigningUp: false })}
+          >
             <Text style={styles.phoneNumber}>
               {localized('Login with phone number')}
             </Text>

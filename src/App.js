@@ -17,7 +17,7 @@ import { AuthProvider } from './core/onboarding/hooks/useAuth'
 import { ProfileAuthProvider } from './core/profile/hooks/useProfileAuth'
 import { authManager } from './core/onboarding/api'
 import InstamobileTheme from './theme'
-import {checkPermissionStatus} from './messagingService'
+import { checkPermissionStatus } from './messagingService'
 
 const store = configureStore()
 
@@ -44,7 +44,8 @@ const App = () => {
                       style={{
                         flex: 1,
                         backgroundColor: headerBackgroundColor,
-                      }}>
+                      }}
+                    >
                       <StatusBar
                         barStyle="dark-content"
                         backgroundColor={headerBackgroundColor}

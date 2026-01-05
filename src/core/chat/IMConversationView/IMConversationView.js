@@ -22,7 +22,8 @@ const IMConversationView = memo(props => {
   return (
     <TouchableOpacity
       onPress={() => onChatItemPress(item)}
-      style={styles.chatItemContainer}>
+      style={styles.chatItemContainer}
+    >
       <IMConversationIconView
         participants={
           item?.admins?.length
@@ -34,17 +35,16 @@ const IMConversationView = memo(props => {
       />
       <View style={styles.chatItemContent}>
         <Text
-          style={[
-            styles.chatFriendName,
-            !markedAsRead && styles.unReadmessage,
-          ]}>
+          style={[styles.chatFriendName, !markedAsRead && styles.unReadmessage]}
+        >
           {title}
         </Text>
         <View style={styles.content}>
           <Text
             numberOfLines={1}
             ellipsizeMode={'middle'}
-            style={[styles.message, !markedAsRead && styles.unReadmessage]}>
+            style={[styles.message, !markedAsRead && styles.unReadmessage]}
+          >
             <IMRichTextView
               emailStyle={[
                 styles.message,
@@ -61,14 +61,16 @@ const IMConversationView = memo(props => {
               usernameStyle={[
                 styles.message,
                 !markedAsRead && styles.unReadmessage,
-              ]}>
+              ]}
+            >
               {formatMessage(item, localized) || ' '}
             </IMRichTextView>
             {' • '}
             <Text
               numberOfLines={1}
               ellipsizeMode={'middle'}
-              style={[styles.message, !markedAsRead && styles.unReadmessage]}>
+              style={[styles.message, !markedAsRead && styles.unReadmessage]}
+            >
               {timeFormat(item.updatedAt || item.createdAt)}
             </Text>
           </Text>

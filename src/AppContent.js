@@ -22,7 +22,8 @@ const AppContent = () => {
         <OnboardingConfigProvider config={config}>
           <StripeProvider
             publishableKey={config.stripeConfig.PUBLISHABLE_KEY}
-            merchantIdentifier={config.stripeConfig.MERCHANT_ID}>
+            merchantIdentifier={config.stripeConfig.MERCHANT_ID}
+          >
             <StatusBar />
             <AppNavigator />
           </StripeProvider>

@@ -237,7 +237,6 @@ const SmsAuthenticationScreen = () => {
       })
   }
 
-
   const onPressSend = async () => {
     if (phoneRef.current.isValidNumber()) {
       const userValidPhoneNumber = phoneRef.current.getValue()
@@ -370,7 +369,8 @@ const SmsAuthenticationScreen = () => {
       <Text
         key={index}
         style={[styles.codeInputCell, isFocused && styles.focusCell]}
-        onLayout={getCellOnLayoutHandler(index)}>
+        onLayout={getCellOnLayoutHandler(index)}
+      >
         {textChild}
       </Text>
     )
@@ -428,7 +428,8 @@ const SmsAuthenticationScreen = () => {
             <Text style={styles.orTextStyle}> {localized('OR')}</Text>
             <TouchableOpacity
               style={styles.signWithEmailContainer}
-              onPress={() => navigation.navigate('Signup')}>
+              onPress={() => navigation.navigate('Signup')}
+            >
               <Text>{localized('Sign up with E-mail')}</Text>
             </TouchableOpacity>
           </>
@@ -464,7 +465,8 @@ const SmsAuthenticationScreen = () => {
             <Text style={styles.orTextStyle}> {localized('OR')}</Text>
             <TouchableOpacity
               style={styles.facebookContainer}
-              onPress={() => onFBButtonPress()}>
+              onPress={() => onFBButtonPress()}
+            >
               <Text style={styles.facebookText}>
                 {localized('Login With Facebook')}
               </Text>
@@ -488,7 +490,8 @@ const SmsAuthenticationScreen = () => {
         )}
         <TouchableOpacity
           style={styles.signWithEmailContainer}
-          onPress={() => navigation.navigate('Login')}>
+          onPress={() => navigation.navigate('Login')}
+        >
           <Text style={styles.signWithEmailText}>
             {localized('Sign in with E-mail')}
           </Text>
@@ -501,7 +504,8 @@ const SmsAuthenticationScreen = () => {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+      >
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image style={styles.backArrowStyle} source={theme.icons.backArrow} />
         </TouchableOpacity>

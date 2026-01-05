@@ -29,7 +29,8 @@ function IMCreateGroupComponent(props) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => onCheck(item)}
-      style={styles.itemContainer}>
+      style={styles.itemContainer}
+    >
       <View style={styles.chatIconContainer}>
         <IMConversationIconView
           style={styles.photo}

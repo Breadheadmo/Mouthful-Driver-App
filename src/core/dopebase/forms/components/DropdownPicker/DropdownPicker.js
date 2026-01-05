@@ -60,11 +60,13 @@ export const DropdownPicker = ({
         visible={showDropDown}
         onDismiss={onDropDownDismiss}
         transparent
-        animationType="none">
+        animationType="none"
+      >
         <TouchableOpacity
           activeOpacity={1}
           style={styles.overlay}
-          onPress={() => setShowDropDown(false)}>
+          onPress={() => setShowDropDown(false)}
+        >
           <View style={styles.shadowContainer}>
             <View style={[styles.dropdown, dropdownLocation]}>
               <ScrollView activeOpacity={1}>
@@ -79,7 +81,8 @@ export const DropdownPicker = ({
                           backgroundColor: theme.colors[appearance].grey0,
                         },
                         styles.item,
-                      ]}>
+                      ]}
+                    >
                       {allowMultipleSelection && (
                         <Checkbox
                           style={styles.checkbox}
@@ -108,7 +111,8 @@ export const DropdownPicker = ({
           ref={dropdownButton}
           activeOpacity={1}
           onPress={toggleDropdown}
-          style={styles.selectedItemContainer}>
+          style={styles.selectedItemContainer}
+        >
           <Text style={styles.itemText}>
             {selectedItems.length && !allowMultipleSelection
               ? selectedItems[0]

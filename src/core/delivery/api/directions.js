@@ -9,8 +9,10 @@ export const getDirections = async (
   try {
     // Validate coordinates before making request
     if (
-      !startLoc?.latitude || !startLoc?.longitude ||
-      !destinationLoc?.latitude || !destinationLoc?.longitude
+      !startLoc?.latitude ||
+      !startLoc?.longitude ||
+      !destinationLoc?.latitude ||
+      !destinationLoc?.longitude
     ) {
       console.log('Invalid coordinates provided to getDirections')
       callback && callback([]) // return empty array
@@ -22,8 +24,17 @@ export const getDirections = async (
     let respJson = await resp.json()
 
     // Handle invalid or ZERO_RESULTS responses safely
-    if (!respJson || respJson.status !== 'OK' || !respJson.routes || respJson.routes.length < 1) {
-      console.log('Directions API error:', respJson?.status, respJson?.error_message)
+    if (
+      !respJson ||
+      respJson.status !== 'OK' ||
+      !respJson.routes ||
+      respJson.routes.length < 1
+    ) {
+      console.log(
+        'Directions API error:',
+        respJson?.status,
+        respJson?.error_message,
+      )
       callback && callback([]) // return empty array to avoid crash
       return
     }
@@ -36,7 +47,7 @@ export const getDirections = async (
     }
 
     let points = Polyline.decode(polylinePoints)
-    let coords = points.map((point) => ({
+    let coords = points.map(point => ({
       latitude: point[0],
       longitude: point[1],
     }))
@@ -55,8 +66,10 @@ export const getETA = async (start, end, apiKey) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (
-        !start?.latitude || !start?.longitude ||
-        !end?.latitude || !end?.longitude
+        !start?.latitude ||
+        !start?.longitude ||
+        !end?.latitude ||
+        !end?.longitude
       ) {
         console.log('Invalid coordinates provided to getETA')
         return resolve(null) // safely return null instead of rejecting

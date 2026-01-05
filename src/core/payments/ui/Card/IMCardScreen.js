@@ -59,7 +59,8 @@ function CardScreen(props) {
       <Button
         containerStyle={styles.actionButtonContainer}
         onPress={() => props.navigation.navigate('Checkout')}
-        textStyle={styles.actionButtonText}>
+        textStyle={styles.actionButtonText}
+      >
         {localized('NEXT')}
       </Button>
     </View>

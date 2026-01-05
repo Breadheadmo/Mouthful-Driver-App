@@ -30,7 +30,8 @@ const BottomSheet = forwardRef((props, myRef) => {
         snapPoints={snapPoints ?? ['25%', '50%']}
         handleComponent={handleComponent}
         style={styles.bottomSheet}
-        onChange={handleSheetChanges}>
+        onChange={handleSheetChanges}
+      >
         <SafeAreaView style={styles.container}>{children}</SafeAreaView>
       </BottomSheetModal>
     </BottomSheetModalProvider>

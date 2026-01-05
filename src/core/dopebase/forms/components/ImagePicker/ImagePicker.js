@@ -56,13 +56,12 @@ export const ImagePicker = ({
         />
       )}
       <View
-        style={[
-          styles.uploadImageBtnContainer,
-          image ? { marginTop: 16 } : {},
-        ]}>
+        style={[styles.uploadImageBtnContainer, image ? { marginTop: 16 } : {}]}
+      >
         <TouchableOpacity
           style={styles.uploadImageBtn}
-          onPress={() => pickImage()}>
+          onPress={() => pickImage()}
+        >
           <Text style={styles.uploadImageText}>
             {localized('Upload Image')}
           </Text>

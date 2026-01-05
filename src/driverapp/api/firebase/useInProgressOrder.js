@@ -9,7 +9,7 @@ const useInProgressOrder = (config, orderID) => {
       return
     }
 
-    console.log("Using config:", config);
+    console.log('Using config:', config)
 
     const unsubscribeFromInprogressOrder = subscribeToInprogressOrderAPI(
       config,

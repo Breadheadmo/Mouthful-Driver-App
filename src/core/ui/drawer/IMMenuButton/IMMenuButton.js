@@ -11,7 +11,8 @@ const IMMenuButton = props => {
     <TouchableHighlight
       onPress={props.onPress}
       style={[styles.btnClickContain, props.containerStyle]}
-      underlayColor={styles.btnClickContain.backgroundColor}>
+      underlayColor={styles.btnClickContain.backgroundColor}
+    >
       <View style={styles.btnContainer}>
         {props.source && <Image source={props.source} style={styles.btnIcon} />}
         <Text style={styles.btnText}>{props.title}</Text>

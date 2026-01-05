@@ -37,7 +37,8 @@ function IMVendorsScreen({
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('EditVendor')
-          }}>
+          }}
+        >
           <Image
             style={styles.icon}
             source={require('../../../../assets/icons/add.png')}
@@ -82,7 +83,8 @@ function IMVendorsScreen({
     return (
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => onPressVendorItem(item)}>
+        onPress={() => onPressVendorItem(item)}
+      >
         <View style={styles.vendorItemContainer}>
           <Image
             placeholderColor={theme.colors[appearance].grey9}
@@ -94,7 +96,8 @@ function IMVendorsScreen({
           </View>
           <Text
             onPress={() => onViewFilter(item.filters)}
-            style={styles.description}>
+            style={styles.description}
+          >
             Outdoor Seats, Free WIFI
           </Text>
           <IMRatingReview

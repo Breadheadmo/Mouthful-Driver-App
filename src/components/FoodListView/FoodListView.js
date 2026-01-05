@@ -11,7 +11,8 @@ export default function FoodListView({ food, onPress }) {
   return (
     <TouchableOpacity
       onPress={() => onPress(food)}
-      style={styles.itemContainer}>
+      style={styles.itemContainer}
+    >
       <View style={styles.leftItemContainer}>
         <Text style={styles.title}>{food.name}</Text>
         <Text style={styles.description}>{food.description}</Text>

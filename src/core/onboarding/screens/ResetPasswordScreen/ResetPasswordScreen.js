@@ -70,7 +70,8 @@ const ResetPasswordScreen = props => {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+      >
         <TouchableOpacity onPress={() => props.navigation.goBack()}>
           <Image style={styles.backArrowStyle} source={theme.icons.backArrow} />
         </TouchableOpacity>
@@ -86,7 +87,8 @@ const ResetPasswordScreen = props => {
         />
         <TouchableOpacity
           style={styles.sendContainer}
-          onPress={() => onSendPasswordResetEmail()}>
+          onPress={() => onSendPasswordResetEmail()}
+        >
           <Text style={styles.sendText}>{localized('Send')}</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>

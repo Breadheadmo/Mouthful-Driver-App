@@ -137,12 +137,14 @@ const BottomInput = memo(props => {
             </Text>
             <IMRichTextView
               onUserPress={onChatUserItemPress}
-              defaultTextStyle={styles.replyingToContentText}>
+              defaultTextStyle={styles.replyingToContentText}
+            >
               {inReplyToItem.content}
             </IMRichTextView>
             <TouchableHighlight
               style={styles.replyingToCloseButton}
-              onPress={onReplyingToDismiss}>
+              onPress={onReplyingToDismiss}
+            >
               <Image source={assets.close} style={styles.replyingToCloseIcon} />
             </TouchableHighlight>
           </View>
@@ -151,22 +153,26 @@ const BottomInput = memo(props => {
           <View style={styles.leftIcons}>
             <TouchableOpacity
               onPress={onAddDocPress}
-              style={styles.inputIconContainer}>
+              style={styles.inputIconContainer}
+            >
               <Image style={styles.inputIcon} source={assets.newDocument} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onAddMediaPress}
-              style={styles.inputIconContainer}>
+              style={styles.inputIconContainer}
+            >
               <Image style={styles.inputIcon} source={assets.cameraFilled} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity
             onPress={onTextPressOut}
             activeOpacity={1}
-            style={styles.inputContainer}>
+            style={styles.inputContainer}
+          >
             <TouchableOpacity
               onPress={onVoiceRecord}
-              style={styles.micIconContainer}>
+              style={styles.micIconContainer}
+            >
               <Image style={styles.micIcon} source={assets.mic} />
             </TouchableOpacity>
             <IMRichTextInput
@@ -194,7 +200,8 @@ const BottomInput = memo(props => {
             style={[
               styles.inputIconContainer,
               disabled ? { opacity: 0.2 } : { opacity: 1 },
-            ]}>
+            ]}
+          >
             <Image style={styles.inputIcon} source={assets.send} />
           </TouchableOpacity>
         </View>

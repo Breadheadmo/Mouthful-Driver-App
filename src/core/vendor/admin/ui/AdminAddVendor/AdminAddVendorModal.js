@@ -60,7 +60,8 @@ export default function AdminAddVendorModal({ isVisible, close }) {
       onBackdropPress={() => close()}
       onBackButtonPress={() => close()}
       isVisible={isVisible}
-      style={styles.modal}>
+      style={styles.modal}
+    >
       <View style={styles.container}>
         <Text style={styles.mainText}>Name of vendor: </Text>
         <TextInput

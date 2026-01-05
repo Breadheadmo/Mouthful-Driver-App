@@ -41,7 +41,8 @@ function ReservationItem(props) {
             flexDirection: 'row',
             height: 20,
             width: cellWidth,
-          }}>
+          }}
+        >
           <View style={styles.dateContainer} />
           <View style={styles.dateSeparatorLine}>
             <View
@@ -89,9 +90,8 @@ function ReservationItem(props) {
             <View style={styles.contentTextContainer}>
               <View style={{ flex: 2 }}>
                 <Text
-                  style={[
-                    styles.contentTitle,
-                  ]}>{`${reservations.firstname} ${reservations.lastname}`}</Text>
+                  style={[styles.contentTitle]}
+                >{`${reservations.firstname} ${reservations.lastname}`}</Text>
               </View>
               <View style={{ flex: 4 }}>
                 <Text numberOfLines={6} style={[styles.contentBody]}>

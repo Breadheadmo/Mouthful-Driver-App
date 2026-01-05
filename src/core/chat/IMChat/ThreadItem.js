@@ -137,7 +137,8 @@ const ThreadItem = memo(props => {
             isMine
               ? styles.inReplyToItemContainerView
               : styles.inReplyToTheirItemContainerView
-          }>
+          }
+        >
           <View style={styles.inReplyToItemHeaderView}>
             <Image style={styles.inReplyToIcon} source={assets.reply} />
             <Text style={styles.inReplyToHeaderText}>
@@ -154,7 +155,8 @@ const ThreadItem = memo(props => {
           <View style={styles.inReplyToItemBubbleView}>
             <IMRichTextView
               onUserPress={onChatUserItemPress}
-              defaultTextStyle={styles.inReplyToItemBubbleText}>
+              defaultTextStyle={styles.inReplyToItemBubbleText}
+            >
               {item?.inReplyToItem?.content?.slice(0, 50)}
             </IMRichTextView>
           </View>
@@ -172,7 +174,8 @@ const ThreadItem = memo(props => {
             isMine
               ? styles.inReplyToTheirStoryContainer
               : styles.inReplyToStoryContainer
-          }>
+          }
+        >
           <Text style={styles.inReplyToHeaderText}>
             {isMine
               ? item?.storyReaction
@@ -284,11 +287,13 @@ const ThreadItem = memo(props => {
         activeOpacity={1}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}
-        onPressOut={handleOnPressOut}>
+        onPressOut={handleOnPressOut}
+      >
         <View
           ref={ref => {
             threadRef.current = ref
-          }}>
+          }}
+        >
           {/* user thread item */}
           {outBound && (
             <>
@@ -302,7 +307,8 @@ const ThreadItem = memo(props => {
                       styles.itemContent,
                       styles.sendItemContent,
                       { padding: 0, marginRight: isAudio || isFile ? 8 : -1 },
-                    ]}>
+                    ]}
+                  >
                     <ThreadMediaItem
                       outBound={outBound}
                       videoRef={videoRef}
@@ -329,7 +335,8 @@ const ThreadItem = memo(props => {
                       ) : (
                         <IMRichTextView
                           onUserPress={onChatUserItemPress}
-                          defaultTextStyle={styles.sendTextMessage}>
+                          defaultTextStyle={styles.sendTextMessage}
+                        >
                           {item?.content}
                         </IMRichTextView>
                       )}
@@ -342,7 +349,8 @@ const ThreadItem = memo(props => {
                   onPress={() =>
                     onSenderProfilePicturePress &&
                     onSenderProfilePicturePress(item)
-                  }>
+                  }
+                >
                   <Image
                     style={styles.userIcon}
                     source={{ uri: senderProfilePictureURL }}
@@ -363,7 +371,8 @@ const ThreadItem = memo(props => {
                 onPress={() =>
                   onSenderProfilePicturePress &&
                   onSenderProfilePicturePress(item)
-                }>
+                }
+              >
                 <Image
                   style={styles.userIcon}
                   source={{ uri: senderProfilePictureURL }}
@@ -378,7 +387,8 @@ const ThreadItem = memo(props => {
                     styles.receiveItemContent,
                     { padding: 0, marginLeft: isAudio || isFile ? 8 : -1 },
                   ]}
-                  onPress={didPressMediaChat}>
+                  onPress={didPressMediaChat}
+                >
                   <ThreadMediaItem
                     videoRef={videoRef}
                     dynamicStyles={styles}
@@ -405,7 +415,8 @@ const ThreadItem = memo(props => {
                       ) : (
                         <IMRichTextView
                           onUserPress={onChatUserItemPress}
-                          defaultTextStyle={styles.receiveTextMessage}>
+                          defaultTextStyle={styles.receiveTextMessage}
+                        >
                           {item?.content}
                         </IMRichTextView>
                       )

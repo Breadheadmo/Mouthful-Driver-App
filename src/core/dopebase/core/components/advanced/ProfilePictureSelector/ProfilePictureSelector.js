@@ -135,7 +135,8 @@ export const ProfilePictureSelector = props => {
       <View style={styles.imageBlock}>
         <TouchableHighlight
           style={styles.imageContainer}
-          onPress={() => handleProfilePictureClick(profilePictureURL)}>
+          onPress={() => handleProfilePictureClick(profilePictureURL)}
+        >
           <Image
             style={[styles.image, { opacity: profilePictureURL ? 1 : 0.3 }]}
             source={

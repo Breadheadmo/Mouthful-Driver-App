@@ -65,7 +65,8 @@ const SearchBar = props => {
             setValue('')
             onChangeText('')
             onCancelButtonPress()
-          }}>
+          }}
+        >
           <Text style={cancelStyle}>{cancelButtonTitle}</Text>
         </TouchableOpacity>
       )}

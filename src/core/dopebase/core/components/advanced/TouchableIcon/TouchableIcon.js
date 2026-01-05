@@ -31,7 +31,8 @@ export const TouchableIcon = props => {
       onLongPress={onLongPress}
       onPressOut={onPressOut}
       onPressIn={onPressIn}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <Image style={[styles.Image, imageStyle]} source={iconSource} />
       {renderTitle && <Text style={[styles.title, titleStyle]}>{title}</Text>}
     </TouchableOpacity>

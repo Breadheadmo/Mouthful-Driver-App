@@ -40,11 +40,11 @@ const dynamicStyles = (theme, appearance) => {
     rowContainer: {
       flexDirection: 'row',
     },
-    headerStyle:{
+    headerStyle: {
       color: colorSet.primaryForeground,
-      fontWeight:'600',
+      fontWeight: '600',
       fontSize: 20,
-      },
+    },
     count: {
       alignSelf: 'center',
       alignItems: 'center',
@@ -123,7 +123,7 @@ const dynamicStyles = (theme, appearance) => {
       alignSelf: 'center',
       padding: 10,
     },
-    description:{
+    description: {
       color: 'blue',
     },
     buttonsContainer: {
@@ -161,7 +161,7 @@ const dynamicStyles = (theme, appearance) => {
       color: theme.colors[appearance].primaryForeground,
       fontSize: 20,
     },
-  });
+  })
 }
 
 export default dynamicStyles

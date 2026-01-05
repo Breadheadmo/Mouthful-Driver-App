@@ -31,7 +31,8 @@ export function IMPlacingOrderModal(props) {
       onModalShow={() => {}}
       onModalHide={() => clearTimeout(countDown())}
       isVisible={isVisible}
-      style={styles.modal}>
+      style={styles.modal}
+    >
       <View style={styles.container}>
         <Text style={styles.title}>{localized('Placing Order...')}</Text>
         <View style={styles.progress}>

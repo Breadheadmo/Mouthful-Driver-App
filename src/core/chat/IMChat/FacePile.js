@@ -6,18 +6,20 @@ import dynamicStyles from './styles'
 
 export function renderFacePile(faces = [], numFaces) {
   const entities = [...faces.reverse()]
-  if (!entities.length)
+  if (!entities.length) {
     return {
       facesToRender: [],
       overflow: 0,
     }
+  }
 
   const facesWithImageUrls = entities
-  if (!facesWithImageUrls.length)
+  if (!facesWithImageUrls.length) {
     return {
       facesToRender: [],
       overflow: 0,
     }
+  }
 
   const facesToRender = facesWithImageUrls.slice(0, numFaces)
   const overflow = entities.length - facesToRender.length
@@ -58,7 +60,8 @@ export default FacePile = memo(props => {
               marginLeft: marginLeft,
             },
             overflowStyle,
-          ]}>
+          ]}
+        >
           <Text
             style={[
               styles.facePileOverflowLabel,
@@ -66,7 +69,8 @@ export default FacePile = memo(props => {
                 fontSize: circleSize * 0.7,
               },
               overflowLabelStyle,
-            ]}>
+            ]}
+          >
             +{overflow}
           </Text>
         </View>

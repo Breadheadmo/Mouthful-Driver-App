@@ -8,14 +8,16 @@ export default function FilterModal({ filters, isVisible, close }) {
     <Modal style={styles.modalContainer} isVisible={isVisible}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={styles.scrollView}>
+        style={styles.scrollView}
+      >
         <View style={styles.container}>
           <View style={styles.modalHeaderContainer}>
             <Text />
             <Text style={styles.filterTitle}>Filters</Text>
             <TouchableWithoutFeedback
               style={styles.doneContainer}
-              onPress={close}>
+              onPress={close}
+            >
               <Text style={styles.filterTitle}>Done</Text>
             </TouchableWithoutFeedback>
           </View>

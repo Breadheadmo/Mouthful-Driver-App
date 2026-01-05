@@ -5,8 +5,7 @@ const dynamicStyles = (theme, appearance) =>
   StyleSheet.create({
     container: {
       width: w(100),
-      backgroundColor:
-        theme.colors[appearance].primaryBackground,
+      backgroundColor: theme.colors[appearance].primaryBackground,
       alignItems: 'center',
       borderTopRightRadius: 10,
       borderTopLeftRadius: 10,
@@ -27,8 +26,7 @@ const dynamicStyles = (theme, appearance) =>
       borderRadius: 5,
       padding: 10,
       margin: 10,
-      backgroundColor:
-        theme.colors[appearance].primaryForeground,
+      backgroundColor: theme.colors[appearance].primaryForeground,
     },
     actionButtonText: {
       fontWeight: 'bold',

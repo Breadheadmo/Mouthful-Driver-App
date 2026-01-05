@@ -180,7 +180,6 @@ export const loginWithEmailAndPassword = async (email, password) => {
   })
 }
 
-
 const signInWithCredential = (credential, appIdentifier, socialAuthType) => {
   return new Promise((resolve, _reject) => {
     auth()
@@ -423,7 +422,6 @@ export const registerWithPhoneNumber = (
   })
 }
 
-
 export const updateProfilePhoto = (userID, profilePictureURL) => {
   return new Promise((resolve, _reject) => {
     usersRef
@@ -450,7 +448,6 @@ export const fetchAndStorePushTokenIfPossible = async user => {
         badgeCount: 0,
       })
     }
-
   } catch (error) {
     console.log(error)
   }

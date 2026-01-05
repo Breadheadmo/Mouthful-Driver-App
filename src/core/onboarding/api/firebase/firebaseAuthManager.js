@@ -154,7 +154,6 @@ const logout = user => {
   authAPI.logout()
 }
 
-
 const loginOrSignUpWithApple = appConfig => {
   return new Promise(async (resolve, _reject) => {
     try {
@@ -377,7 +376,6 @@ const registerWithPhoneNumber = (
     })
   })
 }
-
 
 const handleSuccessfulLogin = (user, accountCreated) => {
   // After a successful login, we fetch & store the device token for push notifications, location, online status, etc.

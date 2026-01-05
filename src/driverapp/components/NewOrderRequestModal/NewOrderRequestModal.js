@@ -19,7 +19,8 @@ export default function NewOrderRequestModal({
       style={styles.modalContainer}
       swipeDirection="down"
       isVisible={isVisible}
-      onModalHide={onModalHide}>
+      onModalHide={onModalHide}
+    >
       <View style={styles.container}>
         <Text style={styles.title}>{localized('Accept New Delivery?')}</Text>
         <View style={styles.actionContainer}>

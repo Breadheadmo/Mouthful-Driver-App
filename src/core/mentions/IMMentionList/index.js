@@ -55,7 +55,8 @@ export default IMMentionList = memo(props => {
         styles.usersMentionContainer,
         containerStyle,
         { height: Math.min(4 * 64, suggestions.length * 64) },
-      ]}>
+      ]}
+    >
       <FlatList
         style={styles.usersMentionScrollContainer}
         keyboardShouldPersistTaps={'always'}

@@ -35,7 +35,8 @@ const LoginStack = () => {
   return (
     <Login.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName="Welcome">
+      initialRouteName="Welcome"
+    >
       <Login.Screen name="Login" component={LoginScreen} />
       <Login.Screen name="Signup" component={SignupScreen} />
       <Login.Screen name="Welcome" component={WelcomeScreen} />
@@ -58,9 +59,10 @@ const DriverMainNavigation = () => {
         headerTintColor: theme.colors[appearance].primaryText,
       })}
       initialRouteName="Home"
-      headerMode="float">
+      headerMode="float"
+    >
       <DriverMain.Screen name="Home" component={DriverHomeScreen} />
-      
+
       <DriverMain.Screen name="Notification" component={IMNotificationScreen} />
       <DriverMain.Screen name="MyProfile" component={MyProfileScreen} />
       <DriverMain.Screen
@@ -92,7 +94,8 @@ const DriverDrawerStack = () => {
         />
       )}
       drawerPosition="left"
-      drawerStyle={{ width: 250 }}>
+      drawerStyle={{ width: 250 }}
+    >
       <DriverDrawer.Screen name="Main" component={DriverMainNavigation} />
     </DriverDrawer.Navigator>
   )
@@ -105,7 +108,8 @@ const RootNavigator = () => {
     <RootStack.Navigator
       initialRouteName="LoadScreen"
       screenOptions={{ headerShown: false, animationEnabled: false }}
-      headerMode="none">
+      headerMode="none"
+    >
       <RootStack.Screen
         options={{ headerShown: false }}
         name="LoadScreen"
@@ -150,7 +154,8 @@ const AppNavigator = () => {
         appearance === 'dark'
           ? theme.navContainerTheme.dark
           : theme.navContainerTheme.light
-      }>
+      }
+    >
       <RootNavigator />
     </NavigationContainer>
   )

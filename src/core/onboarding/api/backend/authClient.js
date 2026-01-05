@@ -446,7 +446,6 @@ export const fetchAndStorePushTokenIfPossible = async user => {
         badgeCount: 0,
       })
     }
-
   } catch (error) {
     console.log(error)
   }

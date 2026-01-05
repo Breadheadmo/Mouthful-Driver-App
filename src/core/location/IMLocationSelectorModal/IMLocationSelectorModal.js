@@ -75,7 +75,8 @@ function IMLocationSelectorModal(props) {
       animationType="slide"
       transparent={false}
       visible={isVisible}
-      onRequestClose={onCancel}>
+      onRequestClose={onCancel}
+    >
       <SafeAreaView style={styles.container}>
         <View style={styles.containerWrapper}>
           <View style={styles.navBarContainer}>
@@ -151,7 +152,8 @@ function IMLocationSelectorModal(props) {
             region={{
               ...region,
               ...locationDelta,
-            }}>
+            }}
+          >
             <Marker
               draggable={true}
               onDragEnd={onMapMarkerDragEnd}

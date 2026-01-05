@@ -1,52 +1,56 @@
-import React, { useEffect } from 'react';
-import { View, Image, Text, StatusBar } from 'react-native';
-import AppIntroSlider from 'react-native-app-intro-slider';
-import { useNavigation } from '@react-navigation/core';
-import { useTheme, useTranslations } from '../../../dopebase';
-import deviceStorage from '../../utils/AuthDeviceStorage';
-import dynamicStyles from './styles';
-import { useOnboardingConfig } from '../../hooks/useOnboardingConfig';
+import React, { useEffect } from 'react'
+import { View, Image, Text, StatusBar } from 'react-native'
+import AppIntroSlider from 'react-native-app-intro-slider'
+import { useNavigation } from '@react-navigation/core'
+import { useTheme, useTranslations } from '../../../dopebase'
+import deviceStorage from '../../utils/AuthDeviceStorage'
+import dynamicStyles from './styles'
+import { useOnboardingConfig } from '../../hooks/useOnboardingConfig'
 
 const WalkthroughScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const { config } = useOnboardingConfig();
+  const { config } = useOnboardingConfig()
 
-  const { localized } = useTranslations();
-  const { theme, appearance } = useTheme();
-  const styles = dynamicStyles(theme, appearance);
+  const { localized } = useTranslations()
+  const { theme, appearance } = useTheme()
+  const styles = dynamicStyles(theme, appearance)
 
-  const slides = config.onboardingConfig.walkthroughScreens.map((screenSpec, index) => ({
-    key: index.toString(),
-    text: screenSpec.description,
-    title: screenSpec.title,
-    image: screenSpec.icon,
-  }));
+  const slides = config.onboardingConfig.walkthroughScreens.map(
+    (screenSpec, index) => ({
+      key: index.toString(),
+      text: screenSpec.description,
+      title: screenSpec.title,
+      image: screenSpec.icon,
+    }),
+  )
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
-    });
+    })
 
     const unsubscribe = navigation.addListener('blur', () => {
-      StatusBar.setBackgroundColor(theme.colors.light.secondaryBackground);
-      StatusBar.setBarStyle('dark-content');
-    });
+      StatusBar.setBackgroundColor(theme.colors.light.secondaryBackground)
+      StatusBar.setBarStyle('dark-content')
+    })
 
-    StatusBar.setBackgroundColor(theme.colors.light.secondaryForeground);
-    StatusBar.setBarStyle(appearance === 'dark' ? 'light-content' : 'dark-content');
+    StatusBar.setBackgroundColor(theme.colors.light.secondaryForeground)
+    StatusBar.setBarStyle(
+      appearance === 'dark' ? 'light-content' : 'dark-content',
+    )
 
-    return unsubscribe;
-  }, [navigation, theme.colors.secondaryForeground, appearance]);
+    return unsubscribe
+  }, [navigation, theme.colors.secondaryForeground, appearance])
 
   const _onDone = () => {
-    deviceStorage.setShouldShowOnboardingFlow('false');
+    deviceStorage.setShouldShowOnboardingFlow('false')
     if (config?.isDelayedLoginEnabled) {
-      navigation.navigate('DelayedHome');
+      navigation.navigate('DelayedHome')
     } else {
-      navigation.navigate('LoginStack', { screen: 'Welcome' });
+      navigation.navigate('LoginStack', { screen: 'Welcome' })
     }
-  };
+  }
 
   const _renderItem = ({ item, dimensions }) => (
     <View style={[styles.container, dimensions]}>
@@ -56,13 +60,19 @@ const WalkthroughScreen = () => {
         <Text style={styles.text}>{item.text}</Text>
       </View>
     </View>
-  );
+  )
 
-  const _renderNextButton = () => <Text style={styles.button}>{localized('Next')}</Text>;
+  const _renderNextButton = () => (
+    <Text style={styles.button}>{localized('Next')}</Text>
+  )
 
-  const _renderSkipButton = () => <Text style={styles.button}>{localized('Skip')}</Text>;
+  const _renderSkipButton = () => (
+    <Text style={styles.button}>{localized('Skip')}</Text>
+  )
 
-  const _renderDoneButton = () => <Text style={styles.button}>{localized('Done')}</Text>;
+  const _renderDoneButton = () => (
+    <Text style={styles.button}>{localized('Done')}</Text>
+  )
 
   return (
     <AppIntroSlider
@@ -76,7 +86,7 @@ const WalkthroughScreen = () => {
       renderSkipButton={_renderSkipButton}
       renderDoneButton={_renderDoneButton}
     />
-  );
-};
+  )
+}
 
-export default WalkthroughScreen;
+export default WalkthroughScreen

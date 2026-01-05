@@ -71,17 +71,10 @@ const IMChat = memo(props => {
   const REPLY = localized('Reply')
   const DELETE = localized('Delete')
 
-  const mediaThreadItemSheetOptions = [
-    CANCEL,
-  ]
+  const mediaThreadItemSheetOptions = [CANCEL]
 
-  const inBoundThreadItemSheetOptions = [
-    REPLY,
-  ]
-  const outBoundThreadItemSheetOptions = [
-    REPLY,
-    DELETE,
-  ]
+  const inBoundThreadItemSheetOptions = [REPLY]
+  const outBoundThreadItemSheetOptions = [REPLY, DELETE]
 
   const markUserAsTyping = inputValue => {
     if (inputValue?.length > 0) {
@@ -163,14 +156,12 @@ const IMChat = memo(props => {
         return onReplyPress(index)
       }
 
-
       if (index === outBoundThreadItemSheetOptions.indexOf(DELETE)) {
         return onDeleteThreadItem && onDeleteThreadItem(temporaryInReplyToItem)
       }
     },
     [onDeleteThreadItem, onReplyPress],
   )
-
 
   const onThreadItemActionSheetDone = useCallback(
     index => {
@@ -184,7 +175,6 @@ const IMChat = memo(props => {
     },
     [threadItemActionSheet.inBound, handleInBoundThreadItemActionSheet],
   )
-
 
   const onReactionPress = async reaction => {
     // this was a reaction on the reactions tray, coming after a long press + one tap
@@ -213,12 +203,14 @@ const IMChat = memo(props => {
           onPress={() => {
             setIsReactionsContainerVisible(false)
           }}
-          style={styles.threadReactionContainer}>
+          style={styles.threadReactionContainer}
+        >
           <View
             style={[
               styles.reactionContainer,
               { top: threadItemActionSheet?.reactionsPosition },
-            ]}>
+            ]}
+          >
             {reactionIcons.map((icon, index) =>
               renderReactionButtonIcon(assets[icon], icon, index),
             )}
@@ -235,7 +227,8 @@ const IMChat = memo(props => {
         style={[
           styles.threadItemActionSheetContainer,
           styles.bottomContentContainer,
-        ]}>
+        ]}
+      >
         {threadItemActionSheet?.options?.map((item, index) => {
           return (
             <TouchableOpacity
@@ -243,7 +236,8 @@ const IMChat = memo(props => {
               onPress={() => {
                 onThreadItemActionSheetDone(index)
                 setIsReactionsContainerVisible(false)
-              }}>
+              }}
+            >
               <Text style={styles.threadItemActionSheetOptionsText}>
                 {item}
               </Text>

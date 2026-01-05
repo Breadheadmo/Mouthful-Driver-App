@@ -25,7 +25,8 @@ export default function IMMentionListItem(props) {
       style={[
         styles.mentionItemContainer,
         // editorStyles.mentionListItemWrapper,
-      ]}>
+      ]}
+    >
       <View style={styles.mentionPhotoContainer}>
         <View style={styles.mentionPhoto}>
           <Image

@@ -31,8 +31,7 @@ const dynamicStyles = (theme, appearance) =>
     actionButtonContainer: {
       borderRadius: 5,
       padding: 14,
-      backgroundColor:
-        theme.colors[appearance].primaryForeground,
+      backgroundColor: theme.colors[appearance].primaryForeground,
       alignSelf: 'center',
     },
     actionButtonText: {

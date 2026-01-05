@@ -25,7 +25,8 @@ function IMFormComponent(props) {
     return (
       <View
         key={index}
-        style={[styles.settingsTypeContainer, styles.appSettingsTypeContainer]}>
+        style={[styles.settingsTypeContainer, styles.appSettingsTypeContainer]}
+      >
         <Text style={styles.text}>{switchField.displayName}</Text>
         <Switch
           value={computeValue(switchField)}
@@ -43,7 +44,8 @@ function IMFormComponent(props) {
           style={[
             styles.settingsTypeContainer,
             styles.appSettingsTypeContainer,
-          ]}>
+          ]}
+        >
           <Text style={styles.text}>{formTextField.displayName}</Text>
           <TextInput
             underlineColorAndroid="transparent"
@@ -67,7 +69,8 @@ function IMFormComponent(props) {
       <TouchableOpacity
         key={index}
         onPress={() => onFormButtonPress(buttonField)}
-        style={[styles.settingsTypeContainer, styles.appSettingsSaveContainer]}>
+        style={[styles.settingsTypeContainer, styles.appSettingsSaveContainer]}
+      >
         <Text style={styles.settingsType}>{buttonField.displayName}</Text>
       </TouchableOpacity>
     )
@@ -100,7 +103,8 @@ function IMFormComponent(props) {
             },
           )
         }}
-        style={[styles.settingsTypeContainer, styles.appSettingsTypeContainer]}>
+        style={[styles.settingsTypeContainer, styles.appSettingsTypeContainer]}
+      >
         <Text style={styles.text}>{selectField.displayName}</Text>
         <Text style={styles.text}>{computeValue(selectField)}</Text>
       </TouchableOpacity>

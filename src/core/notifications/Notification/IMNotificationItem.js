@@ -19,7 +19,8 @@ const IMNotificationItem = memo(props => {
         item.seen
           ? styles.seenNotificationBackground
           : styles.unseenNotificationBackground,
-      ]}>
+      ]}
+    >
       <View style={styles.notificationItemContainer}>
         {item.metadata && item.metadata.outBound && (
           <StoryItem

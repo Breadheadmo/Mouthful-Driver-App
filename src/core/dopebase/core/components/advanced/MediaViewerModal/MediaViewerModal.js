@@ -60,7 +60,8 @@ export class MediaViewerModal extends React.Component {
     return (
       <TouchableOpacity
         style={styles.closeButton}
-        onPress={this.props.onClosed}>
+        onPress={this.props.onClosed}
+      >
         <View
           style={[styles.closeCross, { transform: [{ rotate: '45deg' }] }]}
         />
@@ -87,14 +88,16 @@ export class MediaViewerModal extends React.Component {
         coverScreen={true}
         backButtonClose={true}
         useNativeDriver={Platform.OS === 'android' ? true : false}
-        animationDuration={500}>
+        animationDuration={500}
+      >
         {this.renderCloseButton()}
         <ScrollView
           ref={this.onScrollView}
           style={{ height: '100%', width: '100%' }}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          pagingEnabled={true}>
+          pagingEnabled={true}
+        >
           {this.props.mediaItems.length > 0 &&
             this.props.mediaItems.map((uri, index) => (
               <View
@@ -103,7 +106,8 @@ export class MediaViewerModal extends React.Component {
                 onLayout={event => {
                   const layout = event.nativeEvent.layout
                   this.mediaLayouts[index] = layout.x || layout.left
-                }}>
+                }}
+              >
                 {uri && (
                   <Image
                     source={{
@@ -111,7 +115,7 @@ export class MediaViewerModal extends React.Component {
                     }}
                     style={[
                       styles.deck,
-                      { height: heights[uri] || heights['default'] },
+                      { height: heights[uri] || heights.default },
                     ]}
                     indicatorProps={circleSnailProps}
                     contentFit={'contain'}

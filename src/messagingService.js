@@ -1,14 +1,14 @@
-import messaging from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging'
 //import PushNotification from 'react-native-push-notification';
 //import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import { Platform, Alert, Linking } from 'react-native';
+import { Platform, Alert, Linking } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function openAppSettings() {
   if (Platform.OS === 'ios') {
-    Linking.openURL('app-settings:');
+    Linking.openURL('app-settings:')
   } else {
-    Linking.openSettings();
+    Linking.openSettings()
   }
 }
 export async function checkPermissionStatus() {
@@ -39,12 +39,12 @@ export async function checkPermissionStatus() {
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: openAppSettings },
         ],
-      );
+      )
     } else if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
       await AsyncStorage.setItem(
         'notificationPermissionStatus',
         authStatus.toString(),
-      );
+      )
       console.log('Notification permission already granted.')
     }
   }

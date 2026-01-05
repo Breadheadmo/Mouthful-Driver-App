@@ -80,7 +80,8 @@ export const CountriesModalPicker = props => {
       ref={modal}
       visible={modalVisible}
       onRequestClose={close}
-      animationType={animationType}>
+      animationType={animationType}
+    >
       {renderOptionList()}
     </Modal>
   )

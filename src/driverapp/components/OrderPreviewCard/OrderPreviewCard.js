@@ -51,13 +51,15 @@ const OrderPreviewCard = ({ order, driver, onMessagePress }) => {
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={styles.actionButtonContainer}
-            onPress={onPress}>
+            onPress={onPress}
+          >
             <Text style={styles.actionButtonText}>{buttonTitle}</Text>
           </TouchableOpacity>
           {order.status === 'In Transit' && (
             <TouchableOpacity
               style={styles.secondaryButtonContainer}
-              onPress={onMessagePress}>
+              onPress={onMessagePress}
+            >
               <Text style={styles.secondaryButtonText}>
                 {localized('Message')}
               </Text>

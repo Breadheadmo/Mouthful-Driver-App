@@ -42,7 +42,7 @@ export default class PaymentMethodDataManager {
 
   /**
    * Update payment details on the database
-   * 
+   *
    * @param {object} paymentDetails object  containing ownerID and card object
    * card = {
         addressCity,

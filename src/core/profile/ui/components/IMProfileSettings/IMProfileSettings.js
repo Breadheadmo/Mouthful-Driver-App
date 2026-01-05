@@ -55,7 +55,8 @@ function IMProfileSettings(props) {
       style={styles.settingsTypeContainer}
       onPress={() =>
         onSettingsTypePress(type, routeName, form, screenTitle, phone)
-      }>
+      }
+    >
       <Text style={styles.settingsType}>{type}</Text>
     </TouchableOpacity>
   )

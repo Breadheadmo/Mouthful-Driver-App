@@ -152,7 +152,8 @@ const WelcomeScreen = props => {
           //     isSigningUp: false,
           //   },
           // })
-        }}>
+        }}
+      >
         {localized('Log In')}
       </Button>
 
@@ -171,7 +172,8 @@ const WelcomeScreen = props => {
           //     isSigningUp: true,
           //   },
           // })
-        }}>
+        }}
+      >
         {localized('Sign Up')}
       </Button>
     </View>

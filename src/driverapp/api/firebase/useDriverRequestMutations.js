@@ -1,4 +1,8 @@
-import { accept as acceptAPI, reject as rejectAPI, updateStatus as updateStatusAPI } from './FirebaseOrderClient'
+import {
+  accept as acceptAPI,
+  reject as rejectAPI,
+  updateStatus as updateStatusAPI,
+} from './FirebaseOrderClient'
 import {
   goOnline as goOnlineAPI,
   goOffline as goOfflineAPI,
@@ -22,10 +26,10 @@ const useDriverRequestMutations = config => {
   }
 
   const updateStatus = (order, driver) => {
-    return updateStatusAPI(config, order, driver);
+    return updateStatusAPI(config, order, driver)
   }
 
-  return { accept, reject, goOnline, goOffline, updateStatus}
+  return { accept, reject, goOnline, goOffline, updateStatus }
 }
 
 export default useDriverRequestMutations

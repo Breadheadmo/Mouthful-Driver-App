@@ -78,12 +78,14 @@ export const DateRangePicker = props => {
         <View style={styles.dateContainer}>
           <TouchableOpacity
             style={styles.dateTextContainer}
-            onPress={() => setIsVisible(prev => !prev)}>
+            onPress={() => setIsVisible(prev => !prev)}
+          >
             <Text style={styles.date}>{startDay ?? 'Start'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.dateTextContainer}
-            onPress={() => setIsVisible(prev => !prev)}>
+            onPress={() => setIsVisible(prev => !prev)}
+          >
             <Text style={styles.date}>{endDay ?? 'End'}</Text>
           </TouchableOpacity>
         </View>
@@ -92,7 +94,8 @@ export const DateRangePicker = props => {
         visible={isVisible}
         animationType="slide"
         transparent={false}
-        onRequestClose={onCancel}>
+        onRequestClose={onCancel}
+      >
         <SafeAreaView style={styles.modalView}>
           <View style={styles.headerBar}>
             <TouchableOpacity style={styles.btn} onPress={onCancel}>

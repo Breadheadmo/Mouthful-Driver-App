@@ -1,5 +1,5 @@
-import React, { useEffect, useLayoutEffect , useState } from 'react'
-import { useSelector, useDispatch} from 'react-redux'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { useTheme, useTranslations } from '../../dopebase'
 import IMNotification from '../Notification/IMNotification'
 import {
@@ -52,7 +52,7 @@ const IMNotificationScreen = props => {
       ...notification,
       seen: true,
     })
-    navigation.navigate('DriverOrderList', {notification})
+    navigation.navigate('DriverOrderList', { notification })
   }
 
   const emptyStateConfig = {

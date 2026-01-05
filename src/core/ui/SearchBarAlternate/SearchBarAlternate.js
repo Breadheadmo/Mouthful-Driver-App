@@ -39,7 +39,8 @@ export default memo(function SearchBarAlternate(props) {
     <TouchableOpacity
       activeOpacity={1}
       style={styles.container}
-      onPress={onPress}>
+      onPress={onPress}
+    >
       <Image style={styles.searchIcon} source={searchIcon} />
       <Text style={styles.searchInput}>{placeholderTitle}</Text>
     </TouchableOpacity>

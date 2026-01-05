@@ -101,7 +101,8 @@ const IMViewGroupMembersScreen = props => {
     return (
       <TouchableOpacity
         onPress={() => onPressMember(index)}
-        style={styles.itemContainer}>
+        style={styles.itemContainer}
+      >
         <View style={styles.chatIconContainer}>
           <IMConversationIconView
             style={styles.photo}

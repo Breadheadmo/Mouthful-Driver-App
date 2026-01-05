@@ -234,7 +234,7 @@ const IMChatScreen = memo(props => {
     if (!remoteChannel) {
       return
     }
-    console.log(`Remote channel changed`)
+    console.log('Remote channel changed')
     // We have a hydrated channel, so we replace the partial channel we have on the state
     const hydratedChannel = channelWithHydratedOtherParticipants(remoteChannel)
     setChannel(hydratedChannel)
@@ -259,7 +259,6 @@ const IMChatScreen = memo(props => {
       )
     return { ...channel, otherParticipants }
   }
-
 
   const onGroupSettingsActionDone = useCallback(
     (index, passedChannel) => {
@@ -662,7 +661,7 @@ const IMChatScreen = memo(props => {
       console.log(uploadData)
       alert(
         localized(
-          `Can\'t upload file without a media type. Please report this error with the full error logs`,
+          "Can't upload file without a media type. Please report this error with the full error logs",
         ),
       )
     }

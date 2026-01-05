@@ -26,7 +26,8 @@ export default function EditCartModal({
       isVisible={isVisible}
       onModalShow={() => setQuantity(item.quantity)}
       onModalHide={onModalHide}
-      onSwipeComplete={close}>
+      onSwipeComplete={close}
+    >
       <View style={styles.container}>
         <Text style={styles.price}>{item.name}</Text>
         <View style={styles.buttonSet}>

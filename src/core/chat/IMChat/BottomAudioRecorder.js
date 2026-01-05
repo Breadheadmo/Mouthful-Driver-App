@@ -171,7 +171,8 @@ const BottomAudioRecorder = memo(props => {
           disabled={button.disabled}
           onPress={button.onPress}
           activeOpacity={0.7}
-          style={[styles.recorderControlButton, buttonStyle]}>
+          style={[styles.recorderControlButton, buttonStyle]}
+        >
           <Text style={styles.recoderControlText}>{button.title}</Text>
         </TouchableOpacity>
       </View>

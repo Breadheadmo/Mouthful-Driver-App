@@ -40,7 +40,8 @@ const IMBlockedUsersComponent = props => {
         </View>
         <TouchableOpacity
           style={styles.buttonOpacity}
-          onPress={() => onUserUnblock(item.user?.id)}>
+          onPress={() => onUserUnblock(item.user?.id)}
+        >
           <Text style={styles.button}>{localized('Unblock')}</Text>
         </TouchableOpacity>
       </View>

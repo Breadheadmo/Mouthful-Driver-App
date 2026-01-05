@@ -61,9 +61,9 @@ const compressVideo = async sourceUri => {
         compressionMethod: 'auto',
         bitrate: 1000000, // 1 Mbps - good balance between quality and size
       },
-      (progress) => {
+      progress => {
         console.log('Compression Progress: ', progress)
-      }
+      },
     )
 
     const compressedFileInfo = await FileSystem.getInfoAsync(compressedUri)
@@ -102,7 +102,6 @@ const createThumbnailFromVideo = videoUri => {
       })
   })
 }
-
 
 const resizeImage = async ({ image }, callback) => {
   const imagePath = image?.path || image?.uri
