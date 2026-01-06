@@ -85,3 +85,8 @@ amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
 #amplify-do-not-edit-end
+
+# Local Android SDK / tools (avoid pushing large binaries)
+android-sdk/
+android-cmdline-tools.zip
+android-sdk.zip
