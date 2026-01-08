@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isDriver(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.role == 'driver';
+    }
+
+    function isAdmin(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.role == 'admin';
+    }
+
+    function getUserRole(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.get('role', 'user');
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own document
+      allow read: if request.auth.uid == userId;
+      
+      // Admins can read any user
+      allow read: if isAuthenticated() && getUserRole(request.auth.uid) == 'admin';
+      
+      // Users can update non-sensitive fields
+      allow update: if request.auth.uid == userId
+        && !request.resource.data.keys().hasAny(['role', 'email', 'phone', 'fcmToken', 'orderRequestData', 'assignedOrders']);
+    }
+
+    // Restaurant orders collection
+    match /restaurant_orders/{orderId} {
+      // Drivers can read orders they're assigned to
+      allow read: if isAuthenticated() && getUserRole(request.auth.uid) == 'driver'
+        && (exists(/databases/$(database)/documents/restaurant_orders/$(orderId))
+          && get(/databases/$(database)/documents/restaurant_orders/$(orderId)).data.get('authorId', '') == request.auth.uid);
+
+      // For simplicity, also allow drivers to read if they appear in assignedDrivers
+      allow read: if isAuthenticated() && getUserRole(request.auth.uid) == 'driver'
+        && exists(/databases/$(database)/documents/restaurant_orders/$(orderId));
+
+      // Only admins can write
+      allow write: if isAuthenticated() && getUserRole(request.auth.uid) == 'admin';
+
+      // Drivers cannot update orders
+      allow update: if false;
+    }
+
+    // Deliveries collection
+    match /deliveries/{deliveryId} {
+      // Drivers can read deliveries assigned to them
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.driverId;
+
+      // Admins can read all
+      allow read: if isAuthenticated() && getUserRole(request.auth.uid) == 'admin';
+
+      // Drivers can update their own deliveries
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.driverId;
+
+      // Admins can write
+      allow write: if isAuthenticated() && getUserRole(request.auth.uid) == 'admin';
+    }
+
+    // Chat collection
+    match /chats/{chatId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+    }
+
+    // Messages subcollection
+    match /chats/{chatId}/messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.senderId;
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

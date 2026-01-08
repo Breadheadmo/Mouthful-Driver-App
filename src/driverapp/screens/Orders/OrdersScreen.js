@@ -46,10 +46,10 @@ const OrdersScreen = props => {
       accept(order, currentUser)
         .then(() => {
           console.log('Status', order.status)
-          // Update the order status to 'Driver Accepted'
-          order.status = 'Order Accepted'
+          // Update the order status to 'Accepted'
+          order.status = 'Accepted'
           // Optionally refresh the order data or directly update the local state
-          if (order.status === 'Order Accepted') {
+          if (order.status === 'Accepted') {
           }
         })
         .catch(error => {
@@ -75,7 +75,7 @@ const OrdersScreen = props => {
     if (order) {
       reject(order, currentUser)
         .then(() => {
-          order.status = 'Driver rejected'
+          order.status = 'Rejected'
         })
         .catch(error => {
           console.error('Failed to reject order:', error)
@@ -144,7 +144,7 @@ const OrdersScreen = props => {
           ) : (
             <>
               <Text style={styles.statusText}>{item.status}</Text>
-              {item.status !== 'Driver Rejected' && (
+              {item.status !== 'Rejected' && item.status !== 'Delivered' && (
                 <View>
                   <TouchableOpacity onPress={() => onPickup(item)}>
                     <Text style={styles.statusText1}>

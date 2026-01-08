@@ -37,26 +37,15 @@ import {
   useDriverRequest,
   useDriverRequestMutations,
   useOrders,
+  useOrderNotification,
+  updateDriverFcmToken,
+  handleTokenRefresh,
 } from '../../api'
 
 import { NewOrderRequestModal, OrderPreviewCard } from '../../components'
 
 import { getDirections } from '../../../core/delivery/api/directions'
 import { useConfig } from '../../../config'
-
-// Small header components moved out of render to avoid unstable nested components
-const HeaderTitle = ({ label, style }) => <Text style={style}>{label}</Text>
-
-const HeaderLeftHamburger = ({ onPress }) => <Hamburger onPress={onPress} />
-
-const HeaderRightLogout = ({ onPress, style, imageStyle }) => (
-  <TouchableOpacity style={style} onPress={onPress}>
-    <Image
-      source={require('../../../assets/icons/shutdown.png')}
-      style={imageStyle}
-    />
-  </TouchableOpacity>
-)
 
 function HomeScreen(props) {
   const { navigation } = props
@@ -70,7 +59,7 @@ function HomeScreen(props) {
   const currentUser = useSelector(state => state.auth.user)
   const { orders } = useOrders(config, currentUser?.id)
 
-  const { inProgressOrderID, orderRequest, updatedDriver } = useDriverRequest(
+  const { inProgressOrderID, orderRequest, updatedDriver, requestLoading } = useDriverRequest(
     config,
     currentUser?.id,
   )
@@ -101,26 +90,24 @@ function HomeScreen(props) {
 
   const mapRef = useRef(null)
   const lastDistanceRef = useRef(0) // For smoothing
+  const locationTimerRef = useRef(null) // Timer for 12-second cadence
 
   // -------------------------------------------------------
   // HEADER
   // -------------------------------------------------------
   useLayoutEffect(() => {
-    const headerLabel = localized('Home')
-
     navigation.setOptions({
       headerTitle: () => (
-        <HeaderTitle label={headerLabel} style={styles.headerStyle} />
+        <Text style={styles.headerStyle}>{localized('Home')}</Text>
       ),
-      headerLeft: () => (
-        <HeaderLeftHamburger onPress={() => navigation.openDrawer()} />
-      ),
+      headerLeft: () => <Hamburger onPress={() => navigation.openDrawer()} />,
       headerRight: () => (
-        <HeaderRightLogout
-          onPress={goOffline}
-          style={styles.logoutButton}
-          imageStyle={styles.logoutButtonImage}
-        />
+        <TouchableOpacity style={styles.logoutButton} onPress={goOffline}>
+          <Image
+            source={require('../../../assets/icons/shutdown.png')}
+            style={styles.logoutButtonImage}
+          />
+        </TouchableOpacity>
       ),
     })
   }, [navigation, localized, goOffline, styles])
@@ -144,6 +131,37 @@ function HomeScreen(props) {
     dispatch,
     clearRouteState,
   ])
+
+  // -------------------------------------------------------
+  // FCM SETUP FOR PUSH NOTIFICATIONS
+  // -------------------------------------------------------
+  useEffect(() => {
+    if (!currentUser?.id) {
+      return
+    }
+
+    // Update FCM token on mount
+    updateDriverFcmToken(currentUser.id)
+
+    // Handle token refresh
+    const unsubscribeTokenRefresh = handleTokenRefresh(currentUser.id)
+
+    return () => {
+      if (unsubscribeTokenRefresh) {
+        unsubscribeTokenRefresh()
+      }
+    }
+  }, [currentUser?.id])
+
+  // -------------------------------------------------------
+  // LISTEN FOR INCOMING ORDER NOTIFICATIONS
+  // -------------------------------------------------------
+  useOrderNotification((orderData) => {
+    // orderData contains: { orderId, assignedAt, estimatedDistance, estimatedTime }
+    // The orderRequest state will be updated by useDriverRequest listener
+    // This hook ensures we're alerted even if app is backgrounded
+    console.log('Order notification received:', orderData)
+  })
 
   // -------------------------------------------------------
   // INITIAL MAP POSITION
@@ -327,7 +345,7 @@ function HomeScreen(props) {
       Geolocation.watchPosition(
         position => {
           const { latitude, longitude } = position.coords
-          const locationDict = { location: { latitude, longitude } }
+          const locationDict = { location: { latitude, longitude, updatedAt: new Date() } }
 
           dispatch(setUserData({ user: { ...currentUser, ...locationDict } }))
           updateUser(currentUser.id, locationDict)
@@ -411,6 +429,45 @@ function HomeScreen(props) {
     ],
   )
 
+  // Timer-based location update (every 12 seconds for 10-15s cadence)
+  const startLocationTimer = useCallback(() => {
+    if (locationTimerRef.current) {
+      clearInterval(locationTimerRef.current)
+    }
+
+    locationTimerRef.current = setInterval(() => {
+      Geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords
+          const locationDict = { location: { latitude, longitude, updatedAt: new Date() } }
+
+          dispatch(setUserData({ user: { ...currentUser, ...locationDict } }))
+          updateUser(currentUser.id, locationDict)
+        },
+        error => console.log('Timer location error:', error),
+        { enableHighAccuracy: true },
+      )
+    }, 12000) // 12 seconds (within 10-15s range)
+  }, [dispatch, currentUser])
+
+  const stopLocationTimer = useCallback(() => {
+    if (locationTimerRef.current) {
+      clearInterval(locationTimerRef.current)
+      locationTimerRef.current = null
+    }
+  }, [])
+
+  // Start timer when driver is active
+  useEffect(() => {
+    if (currentUser?.isActive) {
+      startLocationTimer()
+    } else {
+      stopLocationTimer()
+    }
+
+    return () => stopLocationTimer()
+  }, [currentUser?.isActive, startLocationTimer, stopLocationTimer])
+ 
   // Make trackDriverLocation stable for hook dependencies
   const trackDriverLocation = useCallback(() => {
     if (positionWatchID) {
@@ -487,9 +544,18 @@ function HomeScreen(props) {
 
       {orderRequest && (
         <NewOrderRequestModal
-          onAccept={accept}
-          onReject={reject}
           isVisible={!!orderRequest}
+          orderRequest={orderRequest}
+          requestLoading={requestLoading}
+          onModalHide={() => {}}
+          onOrderAccepted={() => {
+            // Navigate to order or in-progress screen
+            console.log('Order accepted, navigate to order details')
+          }}
+          onOrderRejected={() => {
+            // Handle rejection
+            console.log('Order rejected')
+          }}
         />
       )}
 

@@ -1,6 +1,36 @@
 import firestore from '@react-native-firebase/firestore'
 import { functions } from '../../../core/firebase/config'
 
+// Subscribe to orders assigned to driver via assignedDrivers array
+export const subscribeToAssignedOrders = (config, driverID, callback) => {
+  if (!driverID) {
+    return () => {}
+  }
+
+  const ref = firestore()
+    .collection(config.FIREBASE_COLLECTIONS.ORDERS)
+    .where('assignedDrivers', 'array-contains-any', [driverID])
+    .orderBy('createdAt', 'desc')
+
+  return ref.onSnapshot(
+    querySnapshot => {
+      const orders = []
+      querySnapshot?.forEach(doc => {
+        const order = doc.data()
+        orders.push({
+          id: doc.id,
+          ...order,
+        })
+      })
+      callback?.(orders)
+    },
+    error => {
+      console.warn('subscribeToAssignedOrders error:', error)
+    },
+  )
+}
+
+// Legacy: Subscribe to orders with single driverID (backward compatibility)
 export const subscribeToOrders = (config, driverID, callback) => {
   if (!driverID) {
     return () => {}
@@ -57,7 +87,7 @@ export const accept = async (config, order, driver) => {
       return
     }
 
-    const orderRef = firestore().collection('restaurant_orders').doc(order.id)
+    const orderRef = firestore().collection(config.FIREBASE_COLLECTIONS.ORDERS).doc(order.id)
 
     const orderSnap = await orderRef.get()
     if (!orderSnap.exists) {
@@ -65,16 +95,31 @@ export const accept = async (config, order, driver) => {
       return
     }
 
-    await orderRef.update({
-      status: 'Order Accepted',
-    })
+    const orderData = orderSnap.data()
+    const assignedDrivers = orderData?.assignedDrivers || []
+    const driverIndex = assignedDrivers.findIndex(ad => ad.driverId === driver.id)
+
+    // If using assignedDrivers array, update driver's status in array
+    if (driverIndex !== -1) {
+      assignedDrivers[driverIndex].status = 'Accepted'
+      assignedDrivers[driverIndex].acceptedAt = new Date()
+      await orderRef.update({
+        assignedDrivers,
+        status: 'Accepted',
+      })
+    } else {
+      // Fallback: legacy driverID field
+      await orderRef.update({
+        status: 'Accepted',
+      })
+    }
 
     const notify = functions().httpsCallable('sendPushNofications')
     await notify({
       data: {
-        toUserID: '5FG2G0svoSaE58pKGDTXpB2GD5D3',
+        toUserID: orderData.vendorId || '5FG2G0svoSaE58pKGDTXpB2GD5D3',
         titleStr: 'Order Accepted',
-        contentStr: 'Driver accepted order',
+        contentStr: `Driver ${driver.name || 'Driver'} accepted order`,
         type: 'notifications',
         orderID: order.id,
       },
@@ -92,7 +137,7 @@ export const updateStatus = async (config, order, driver) => {
       return
     }
 
-    const orderRef = firestore().collection('restaurant_orders').doc(order.id)
+    const orderRef = firestore().collection(config.FIREBASE_COLLECTIONS.ORDERS).doc(order.id)
 
     const snap = await orderRef.get()
     if (!snap.exists) {
@@ -102,6 +147,7 @@ export const updateStatus = async (config, order, driver) => {
 
     await orderRef.update({
       status: 'In Transit',
+      inTransitAt: new Date(),
     })
   } catch (error) {
     console.log('Update status error:', error)
@@ -114,7 +160,7 @@ export const reject = async (config, order, driver) => {
       return
     }
 
-    const orderRef = firestore().collection('restaurant_orders').doc(order.id)
+    const orderRef = firestore().collection(config.FIREBASE_COLLECTIONS.ORDERS).doc(order.id)
 
     const snap = await orderRef.get()
     if (!snap.exists) {
@@ -122,13 +168,25 @@ export const reject = async (config, order, driver) => {
       return
     }
 
-    const rejectedByDrivers = order.rejectedByDrivers || []
-    rejectedByDrivers.push(driver.id)
-
-    await orderRef.update({
-      status: 'Driver Rejected',
-      rejectedByDrivers,
-    })
+    const orderData = snap.data()
+    const assignedDrivers = orderData?.assignedDrivers || []
+    
+    // If using assignedDrivers array, mark as rejected or remove
+    if (assignedDrivers.length > 0) {
+      const driverIndex = assignedDrivers.findIndex(ad => ad.driverId === driver.id)
+      if (driverIndex !== -1) {
+        assignedDrivers[driverIndex].status = 'Rejected'
+        assignedDrivers[driverIndex].rejectedAt = new Date()
+      }
+      await orderRef.update({ assignedDrivers })
+    } else {
+      // Fallback: legacy rejectedByDrivers field
+      const rejectedByDrivers = orderData.rejectedByDrivers || []
+      rejectedByDrivers.push(driver.id)
+      await orderRef.update({
+        rejectedByDrivers,
+      })
+    }
   } catch (error) {
     console.log('Reject order error:', error)
   }
@@ -173,7 +231,10 @@ export const markAsPickedUp = async (config, order) => {
       return
     }
 
-    await ref.update({ status: 'In Transit' })
+    await ref.update({ 
+      status: 'Picked Up',
+      pickedUpAt: new Date(),
+    })
     console.log('Order marked as picked up:', order.id)
   } catch (error) {
     console.log('Mark as picked up error:', error)
@@ -196,14 +257,18 @@ export const markAsCompleted = async (config, order, driver) => {
       return
     }
 
-    await orderRef.update({ status: 'Order Completed' })
+    await orderRef.update({ 
+      status: 'Delivered',
+      deliveredAt: new Date(),
+      deliveredBy: driver.id,
+    })
 
     await firestore()
       .collection(config.FIREBASE_COLLECTIONS.USERS)
       .doc(driver.id)
       .update({ inProgressOrderID: null, orderRequestData: null })
 
-    console.log('Order marked as completed:', order.id)
+    console.log('Order marked as delivered:', order.id)
   } catch (error) {
     console.log('Mark as completed error:', error)
   }
