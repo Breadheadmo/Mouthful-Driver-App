@@ -37,9 +37,6 @@ import {
   useDriverRequest,
   useDriverRequestMutations,
   useOrders,
-  useOrderNotification,
-  updateDriverFcmToken,
-  handleTokenRefresh,
 } from '../../api'
 
 import { NewOrderRequestModal, OrderPreviewCard } from '../../components'
@@ -59,7 +56,7 @@ function HomeScreen(props) {
   const currentUser = useSelector(state => state.auth.user)
   const { orders } = useOrders(config, currentUser?.id)
 
-  const { inProgressOrderID, orderRequest, updatedDriver, requestLoading } = useDriverRequest(
+  const { inProgressOrderID, orderRequest, updatedDriver } = useDriverRequest(
     config,
     currentUser?.id,
   )
@@ -131,37 +128,6 @@ function HomeScreen(props) {
     dispatch,
     clearRouteState,
   ])
-
-  // -------------------------------------------------------
-  // FCM SETUP FOR PUSH NOTIFICATIONS
-  // -------------------------------------------------------
-  useEffect(() => {
-    if (!currentUser?.id) {
-      return
-    }
-
-    // Update FCM token on mount
-    updateDriverFcmToken(currentUser.id)
-
-    // Handle token refresh
-    const unsubscribeTokenRefresh = handleTokenRefresh(currentUser.id)
-
-    return () => {
-      if (unsubscribeTokenRefresh) {
-        unsubscribeTokenRefresh()
-      }
-    }
-  }, [currentUser?.id])
-
-  // -------------------------------------------------------
-  // LISTEN FOR INCOMING ORDER NOTIFICATIONS
-  // -------------------------------------------------------
-  useOrderNotification((orderData) => {
-    // orderData contains: { orderId, assignedAt, estimatedDistance, estimatedTime }
-    // The orderRequest state will be updated by useDriverRequest listener
-    // This hook ensures we're alerted even if app is backgrounded
-    console.log('Order notification received:', orderData)
-  })
 
   // -------------------------------------------------------
   // INITIAL MAP POSITION
@@ -544,18 +510,9 @@ function HomeScreen(props) {
 
       {orderRequest && (
         <NewOrderRequestModal
+          onAccept={accept}
+          onReject={reject}
           isVisible={!!orderRequest}
-          orderRequest={orderRequest}
-          requestLoading={requestLoading}
-          onModalHide={() => {}}
-          onOrderAccepted={() => {
-            // Navigate to order or in-progress screen
-            console.log('Order accepted, navigate to order details')
-          }}
-          onOrderRejected={() => {
-            // Handle rejection
-            console.log('Order rejected')
-          }}
         />
       )}
 
